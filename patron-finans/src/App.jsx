@@ -78,23 +78,53 @@ export default function PatronFinancePro() {
 
   // 3. İstatistikler
   const stats = useMemo(() => {
-    const totalIncome = transactions.filter(t => t.type === 'income').reduce((acc, t) => acc + Number(t.amount), 0);
-    const totalExpense = transactions.filter(t => t.type === 'expense').reduce((acc, t) => acc + Number(t.amount), 0);
+    // Single pass optimization for transactions
+    const today = new Date().toISOString().split('T')[0];
+    const currentMonth = today.slice(0, 7);
+
+    let totalIncome = 0;
+    let totalExpense = 0;
+    let dailyIncome = 0;
+    let monthlyIncome = 0;
+    
+    const breakdown = { cash: { income: 0, expense: 0, balance: 0 }, ziraat: { income: 0, expense: 0, balance: 0 }, halk: { income: 0, expense: 0, balance: 0 }, iban: { income: 0, expense: 0, balance: 0 }, mix: { income: 0, expense: 0, balance: 0 } };
+
+    transactions.forEach(t => {
+      const val = Number(t.amount);
+
+      // Income/Expense totals
+      if (t.type === 'income') {
+        totalIncome += val;
+        if (t.date === today) dailyIncome += val;
+        if (t.date.startsWith(currentMonth)) monthlyIncome += val;
+      } else if (t.type === 'expense') {
+        totalExpense += val;
+      }
+
+      // Breakdown logic
+      let key = t.method === 'mix' ? 'mix' : (t.method === 'cash' ? 'cash' : (t.cardBank || 'iban'));
+      if (!breakdown[key]) key = 'cash';
+
+      if (t.type === 'income') {
+        breakdown[key].income += val;
+        breakdown[key].balance += val;
+      } else {
+        // Note: Original logic assumed 'else' is expense for breakdown purposes
+        breakdown[key].expense += val;
+        breakdown[key].balance -= val;
+      }
+    });
+
     const netProfit = totalIncome - totalExpense;
     const totalMonthlyFixedCosts = Object.values(fixedCosts).reduce((sum, val) => sum + Number(val || 0), 0);
     const netNetProfit = netProfit - totalMonthlyFixedCosts;
-    const totalDebt = debts.filter(d => d.type === 'debt').reduce((acc, d) => acc + Number(d.amount), 0) - debts.filter(d => d.type === 'payment').reduce((acc, d) => acc + Number(d.amount), 0);
-    const today = new Date().toISOString().split('T')[0];
-    const dailyIncome = transactions.filter(t => t.type === 'income' && t.date === today).reduce((acc, t) => acc + Number(t.amount), 0);
-    const monthlyIncome = transactions.filter(t => t.type === 'income' && t.date.startsWith(today.slice(0, 7))).reduce((acc, t) => acc + Number(t.amount), 0);
-    
-    const breakdown = { cash: { income: 0, expense: 0, balance: 0 }, ziraat: { income: 0, expense: 0, balance: 0 }, halk: { income: 0, expense: 0, balance: 0 }, iban: { income: 0, expense: 0, balance: 0 }, mix: { income: 0, expense: 0, balance: 0 } };
-    transactions.forEach(t => {
-      const val = Number(t.amount);
-      let key = t.method === 'mix' ? 'mix' : (t.method === 'cash' ? 'cash' : (t.cardBank || 'iban'));
-      if (!breakdown[key]) key = 'cash';
-      if (t.type === 'income') { breakdown[key].income += val; breakdown[key].balance += val; } 
-      else { breakdown[key].expense += val; breakdown[key].balance -= val; }
+
+    // Single pass optimization for debts
+    let totalDebt = 0;
+    debts.forEach(d => {
+       const val = Number(d.amount);
+       if (d.type === 'debt') totalDebt += val;
+       else if (d.type === 'payment') totalDebt -= val;
     });
 
     const investmentStats = investments.reduce((acc, inv) => {
