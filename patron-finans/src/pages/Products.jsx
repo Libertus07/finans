@@ -1,9 +1,98 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useCallback, memo } from 'react';
 import { Coffee, PlusCircle, Search, Trash2, AlertTriangle, ArrowRight, Calculator, MinusCircle, GripVertical, TrendingUp, Wand2, Loader2, Sparkles } from 'lucide-react';
 import { addDoc, deleteDoc, updateDoc, doc, collection, writeBatch } from 'firebase/firestore';
 import { db, appId, auth } from '../services/firebase';
 import { formatCurrency } from '../utils/helpers';
 import { CATEGORIES, GEMINI_API_KEY } from '../utils/constants';
+
+// Optimization: Memoized Product List Item to prevent unnecessary re-renders
+const ProductListItem = memo(({ product, isPatron, onUpdate, onDelete, onDragStart, onDragOver, onDrop }) => {
+    const profit = product.price - product.cost;
+    const margin = product.price > 0 ? (profit / product.price) * 100 : 0;
+
+    return (
+        <div
+            draggable={isPatron}
+            onDragStart={(e) => onDragStart(e, product.id)}
+            onDragOver={onDragOver}
+            onDrop={(e) => onDrop(e, product.id)}
+            className={`group relative bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-center gap-4 transition-all hover:border-slate-500 ${isPatron ? 'cursor-move' : ''}`}
+        >
+            {isPatron && <div className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 opacity-0 group-hover:opacity-50"><GripVertical size={16}/></div>}
+            <div className="flex-1 w-full text-center sm:text-left pl-4">
+                <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <input
+                        type="text"
+                        value={product.name}
+                        disabled={!isPatron}
+                        onChange={(e) => onUpdate(product.id, 'name', e.target.value)}
+                        className="bg-transparent font-bold text-white text-lg outline-none w-full border-b border-transparent focus:border-indigo-500 transition-all"
+                    />
+                    {isPatron && margin < 40 && <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded border border-red-500/20 whitespace-nowrap flex items-center gap-1"><AlertTriangle size={10}/> %{margin.toFixed(0)}</span>}
+                </div>
+                <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
+                    <select
+                        value={product.category}
+                        disabled={!isPatron}
+                        onChange={(e) => onUpdate(product.id, 'category', e.target.value)}
+                        className="text-xs text-slate-500 bg-slate-900/50 rounded px-2 py-1 outline-none"
+                    >
+                        {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <span className="text-xs text-slate-500">Satılan: <strong className="text-slate-300">{product.sold}</strong></span>
+                </div>
+            </div>
+            <div className="flex items-center gap-6 bg-slate-900/50 p-2 rounded-xl border border-slate-800">
+                <div className="text-right">
+                    <label className="text-[10px] text-slate-500 block">MALİYET</label>
+                    <div className="flex items-center">
+                        <input
+                            type="number"
+                            value={product.cost}
+                            disabled={!isPatron}
+                            onChange={(e) => onUpdate(product.id, 'cost', e.target.value)}
+                            className="bg-transparent text-right text-red-400 w-16 font-mono text-sm outline-none border-b border-transparent focus:border-red-500"
+                        />
+                        <span className="text-xs text-slate-600 ml-1">₺</span>
+                    </div>
+                </div>
+                <div className="w-px h-8 bg-slate-700"></div>
+                <div className="text-right">
+                    <label className="text-[10px] text-emerald-500 block font-bold">SATIŞ</label>
+                    <div className="flex items-center">
+                        <input
+                            type="number"
+                            value={product.price}
+                            disabled={!isPatron}
+                            onChange={(e) => onUpdate(product.id, 'price', e.target.value)}
+                            className="bg-transparent text-right text-white w-16 font-bold text-lg outline-none border-b border-transparent focus:border-emerald-500"
+                        />
+                        <span className="text-sm text-slate-400 ml-1 font-bold">₺</span>
+                    </div>
+                </div>
+            </div>
+            {isPatron && <button onClick={() => onDelete(product.id)} className="text-slate-600 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={18}/></button>}
+        </div>
+    );
+});
+
+// Optimization: Memoized Simulator Item
+const SimulatorItem = memo(({ product, quantity, onSalesChange }) => (
+    <div className="flex justify-between items-center group">
+        <span className="text-sm text-slate-300 truncate w-32">{product.name}</span>
+        <div className="flex items-center gap-1">
+            <button onClick={() => onSalesChange(product.id, (quantity || 0) - 1)} className="text-slate-500 hover:text-red-400 p-1"><MinusCircle size={14}/></button>
+            <input
+                type="number"
+                value={quantity || ''}
+                onChange={(e) => onSalesChange(product.id, e.target.value)}
+                placeholder="0"
+                className="w-8 bg-slate-800 border border-slate-600 rounded text-center text-xs text-white py-1 outline-none"
+            />
+            <button onClick={() => onSalesChange(product.id, (quantity || 0) + 1)} className="text-slate-500 hover:text-emerald-400 p-1"><PlusCircle size={14}/></button>
+        </div>
+    </div>
+));
 
 const Products = ({ products, isPatron }) => {
     const [searchTerm, setSearchTerm] = useState("");
@@ -15,12 +104,12 @@ const Products = ({ products, isPatron }) => {
     
     // Sürükle Bırak Referansları
     const dragItem = useRef(null);
-    const dragOverItem = useRef(null);
 
     // --- SÜRÜKLE BIRAK (SIRALAMA) ---
-    const handleDragStart = (e, id) => { dragItem.current = id; };
-    const handleDragOver = (e) => { e.preventDefault(); };
-    const handleDrop = async (e, droppedId) => {
+    const handleDragStart = useCallback((e, id) => { dragItem.current = id; }, []);
+    const handleDragOver = useCallback((e) => { e.preventDefault(); }, []);
+
+    const handleDrop = useCallback(async (e, droppedId) => {
         if (!isPatron || dragItem.current === droppedId) return;
         const dragProduct = products.find(p => p.id === dragItem.current);
         const dropProduct = products.find(p => p.id === droppedId);
@@ -41,7 +130,7 @@ const Products = ({ products, isPatron }) => {
         });
         await batch.commit();
         dragItem.current = null;
-    };
+    }, [isPatron, products]);
 
     // --- FIREBASE İŞLEMLERİ ---
     const handleAddProduct = async () => {
@@ -60,20 +149,18 @@ const Products = ({ products, isPatron }) => {
         setAiProductDesc("");
     };
 
-    // 👇 GÜNCELLENEN KISIM: Onay penceresi (window.confirm) kaldırıldı
-    const handleDeleteProduct = async (id) => {
+    const handleDeleteProduct = useCallback(async (id) => {
         await deleteDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'products', id));
-    };
+    }, []);
 
-    const handleUpdateProduct = async (id, field, value) => {
+    const handleUpdateProduct = useCallback(async (id, field, value) => {
         const val = (field === 'price' || field === 'cost') ? Number(value) : value;
         await updateDoc(doc(db, 'artifacts', appId, 'users', auth.currentUser.uid, 'products', id), { [field]: val });
-    };
+    }, []);
 
     const handleBulkPriceUpdate = async () => {
         const percent = Number(prompt("Seçili kategoriye yüzde kaç zam/indirim yapılsın? (Örn: 10 veya -10)"));
         if (!percent) return;
-        // Toplu işlem tehlikeli olduğu için buradaki onayı tutmak daha güvenli olabilir, istersen bunu da kaldırabiliriz.
         if(!window.confirm(`${selectedCategory} kategorisine %${percent} işlem yapılacak. Emin misiniz?`)) return;
         
         const batch = writeBatch(db);
@@ -86,7 +173,9 @@ const Products = ({ products, isPatron }) => {
     };
 
     // --- HIZLI SATIŞ SİMÜLATÖRÜ ---
-    const handleSalesChange = (id, val) => setDailySales(prev => ({ ...prev, [id]: Math.max(0, Number(val)) }));
+    const handleSalesChange = useCallback((id, val) => {
+        setDailySales(prev => ({ ...prev, [id]: Math.max(0, Number(val)) }));
+    }, []);
     
     const calculateDailyTotal = () => {
         let totalRev = 0, totalCost = 0;
@@ -123,11 +212,11 @@ const Products = ({ products, isPatron }) => {
         } catch (e) { console.error(e); } finally { setAiLoading(false); }
     };
 
-    // Filtreleme
-    const filteredProducts = products.filter(p => 
+    // Filtreleme - Memoized
+    const filteredProducts = useMemo(() => products.filter(p =>
         (selectedCategory === 'Tümü' || p.category === selectedCategory) &&
         (p.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    );
+    ), [products, selectedCategory, searchTerm]);
 
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-in slide-in-from-bottom-4 duration-500">
@@ -167,31 +256,18 @@ const Products = ({ products, isPatron }) => {
              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* SOL: ÜRÜN LİSTESİ (SÜRÜKLE BIRAKLI) */}
                 <div className="lg:col-span-2 space-y-3">
-                   {filteredProducts.map((p) => {
-                       const profit = p.price - p.cost;
-                       const margin = p.price > 0 ? (profit / p.price) * 100 : 0;
-                       return (
-                           <div key={p.id} draggable={isPatron} onDragStart={(e) => handleDragStart(e, p.id)} onDragOver={handleDragOver} onDrop={(e) => handleDrop(e, p.id)} className={`group relative bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col sm:flex-row items-center gap-4 transition-all hover:border-slate-500 ${isPatron ? 'cursor-move' : ''}`}>
-                              {isPatron && <div className="absolute left-2 top-1/2 -translate-y-1/2 text-slate-600 opacity-0 group-hover:opacity-50"><GripVertical size={16}/></div>}
-                              <div className="flex-1 w-full text-center sm:text-left pl-4">
-                                  <div className="flex items-center justify-center sm:justify-start gap-2">
-                                      <input type="text" value={p.name} disabled={!isPatron} onChange={(e) => handleUpdateProduct(p.id, 'name', e.target.value)} className="bg-transparent font-bold text-white text-lg outline-none w-full border-b border-transparent focus:border-indigo-500 transition-all"/>
-                                      {isPatron && margin < 40 && <span className="text-[10px] bg-red-500/10 text-red-400 px-2 py-0.5 rounded border border-red-500/20 whitespace-nowrap flex items-center gap-1"><AlertTriangle size={10}/> %{margin.toFixed(0)}</span>}
-                                  </div>
-                                  <div className="flex items-center justify-center sm:justify-start gap-2 mt-1">
-                                      <select value={p.category} disabled={!isPatron} onChange={(e) => handleUpdateProduct(p.id, 'category', e.target.value)} className="text-xs text-slate-500 bg-slate-900/50 rounded px-2 py-1 outline-none">{CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}</select>
-                                      <span className="text-xs text-slate-500">Satılan: <strong className="text-slate-300">{p.sold}</strong></span>
-                                  </div>
-                              </div>
-                              <div className="flex items-center gap-6 bg-slate-900/50 p-2 rounded-xl border border-slate-800">
-                                  <div className="text-right"><label className="text-[10px] text-slate-500 block">MALİYET</label><div className="flex items-center"><input type="number" value={p.cost} disabled={!isPatron} onChange={(e) => handleUpdateProduct(p.id, 'cost', e.target.value)} className="bg-transparent text-right text-red-400 w-16 font-mono text-sm outline-none border-b border-transparent focus:border-red-500"/><span className="text-xs text-slate-600 ml-1">₺</span></div></div>
-                                  <div className="w-px h-8 bg-slate-700"></div>
-                                  <div className="text-right"><label className="text-[10px] text-emerald-500 block font-bold">SATIŞ</label><div className="flex items-center"><input type="number" value={p.price} disabled={!isPatron} onChange={(e) => handleUpdateProduct(p.id, 'price', e.target.value)} className="bg-transparent text-right text-white w-16 font-bold text-lg outline-none border-b border-transparent focus:border-emerald-500"/><span className="text-sm text-slate-400 ml-1 font-bold">₺</span></div></div>
-                              </div>
-                              {isPatron && <button onClick={() => handleDeleteProduct(p.id)} className="text-slate-600 hover:text-red-500 p-2 opacity-0 group-hover:opacity-100 transition-all"><Trash2 size={18}/></button>}
-                           </div>
-                       )
-                   })}
+                   {filteredProducts.map((p) => (
+                       <ProductListItem
+                           key={p.id}
+                           product={p}
+                           isPatron={isPatron}
+                           onUpdate={handleUpdateProduct}
+                           onDelete={handleDeleteProduct}
+                           onDragStart={handleDragStart}
+                           onDragOver={handleDragOver}
+                           onDrop={handleDrop}
+                       />
+                   ))}
                 </div>
 
                 {/* SAĞ: HIZLI SATIŞ SİMÜLATÖRÜ */}
@@ -199,14 +275,12 @@ const Products = ({ products, isPatron }) => {
                     <h3 className="font-bold text-white mb-4 flex items-center gap-2"><Calculator size={20} className="text-emerald-400"/> Satış Terminali</h3>
                     <div className="space-y-2 flex-1 overflow-y-auto max-h-[400px] pr-2 custom-scrollbar bg-slate-900/30 p-2 rounded-xl border border-slate-700/50">
                         {filteredProducts.map(p => (
-                            <div key={p.id} className="flex justify-between items-center group">
-                                <span className="text-sm text-slate-300 truncate w-32">{p.name}</span>
-                                <div className="flex items-center gap-1">
-                                    <button onClick={() => handleSalesChange(p.id, (dailySales[p.id] || 0) - 1)} className="text-slate-500 hover:text-red-400 p-1"><MinusCircle size={14}/></button>
-                                    <input type="number" value={dailySales[p.id] || ''} onChange={(e) => handleSalesChange(p.id, e.target.value)} placeholder="0" className="w-8 bg-slate-800 border border-slate-600 rounded text-center text-xs text-white py-1 outline-none"/>
-                                    <button onClick={() => handleSalesChange(p.id, (dailySales[p.id] || 0) + 1)} className="text-slate-500 hover:text-emerald-400 p-1"><PlusCircle size={14}/></button>
-                                </div>
-                            </div>
+                            <SimulatorItem
+                                key={p.id}
+                                product={p}
+                                quantity={dailySales[p.id]}
+                                onSalesChange={handleSalesChange}
+                            />
                         ))}
                     </div>
                     <div className="bg-slate-900 p-4 rounded-xl border border-slate-600 space-y-2 mt-4">
