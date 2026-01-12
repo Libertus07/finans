@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
     Wallet, TrendingUp, Activity, AlertOctagon, 
     Target, Clock, Zap, ArrowUpRight, 
@@ -11,9 +11,6 @@ import {
 import { formatCurrency } from '../utils/helpers';
 
 const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, tables = [] }) => {
-    // Veri yüklenmediyse koruma (Loading ekranı)
-    if (!stats || !transactions) return <div className="p-10 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-indigo-500 rounded-full border-t-transparent"></div></div>;
-
     // --- HELPER FONKSİYONLAR ---
     const getGreeting = () => {
         const hour = new Date().getHours();
@@ -29,30 +26,58 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     const greetingText = getGreeting();
 
     // --- HESAPLAMALAR ---
-    const totalLiquidity = stats.assets.cash + stats.assets.ziraat + stats.assets.halk + stats.assets.iban;
-    const totalNetWorth = totalLiquidity + stats.investmentStats.currentValue;
 
     // Hedef Yüzdesi
-    const safeDivisor = monthlyGoal > 0 ? monthlyGoal : 1; 
-    const goalPercent = Math.min((stats.monthlyIncome / safeDivisor) * 100, 100);
-    const goalData = [{ name: 'Hedef', value: goalPercent, fill: '#8b5cf6' }];
+    const monthlyIncome = stats ? stats.monthlyIncome : 0;
+    const goalData = useMemo(() => {
+        if (!stats) return [{ name: 'Hedef', value: 0, fill: '#8b5cf6' }];
+        const safeDivisor = monthlyGoal > 0 ? monthlyGoal : 1;
+        const goalPercent = Math.min((monthlyIncome / safeDivisor) * 100, 100);
+        return [{ name: 'Hedef', value: goalPercent, fill: '#8b5cf6' }];
+    }, [monthlyGoal, monthlyIncome, stats]);
 
     // Masa Doluluk
-    const totalTables = tables.length || 50; 
-    const occupiedTables = tables.filter(t => t.status === 'occupied').length || 0;
-    const occupancyRate = (occupiedTables / totalTables) * 100;
+    const { occupiedTables, occupancyRate, totalTables } = useMemo(() => {
+        const total = tables.length || 50;
+        const occupied = tables.filter(t => t.status === 'occupied').length || 0;
+        const rate = (occupied / total) * 100;
+        return { occupiedTables: occupied, occupancyRate: rate, totalTables: total };
+    }, [tables]);
 
-    // Grafik Verisi (Son 7 Gün)
-    const chartData = [];
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
-        const dayIncome = transactions.filter(t => t.date === dateStr && t.type === 'income').reduce((a,b) => a + Number(b.amount), 0);
-        chartData.push({ name: d.toLocaleDateString('tr-TR', { weekday: 'short' }), income: dayIncome });
-    }
+    // Grafik Verisi (Son 7 Gün) - O(N) Optimized
+    const chartData = useMemo(() => {
+        if (!transactions) return [];
+        const days = [];
+        const dataMap = {};
 
-    const recentSales = transactions.slice(0, 5);
+        // 1. Son 7 günü hazırla
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            const dateStr = d.toISOString().split('T')[0];
+            const name = d.toLocaleDateString('tr-TR', { weekday: 'short' });
+            days.push({ dateStr, name });
+            dataMap[dateStr] = 0;
+        }
+
+        // 2. Tek döngüde hesapla (O(N))
+        transactions.forEach(t => {
+            if (t.type === 'income' && dataMap[t.date] !== undefined) {
+                dataMap[t.date] += Number(t.amount);
+            }
+        });
+
+        // 3. Sıralı veriyi döndür
+        return days.map(d => ({ name: d.name, income: dataMap[d.dateStr] }));
+    }, [transactions]);
+
+    const recentSales = useMemo(() => transactions ? transactions.slice(0, 5) : [], [transactions]);
+
+    // Veri yüklenmediyse koruma (Loading ekranı)
+    if (!stats || !transactions) return <div className="p-10 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-indigo-500 rounded-full border-t-transparent"></div></div>;
+
+    const totalLiquidity = stats.assets.cash + stats.assets.ziraat + stats.assets.halk + stats.assets.iban;
+    const totalNetWorth = totalLiquidity + stats.investmentStats.currentValue;
 
     return (
         <div className="space-y-6 animate-in fade-in duration-700 pb-10">
