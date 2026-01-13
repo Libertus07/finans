@@ -1,10 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useCallback, memo } from 'react';
 import { Coffee, Plus, Minus, Trash2, CreditCard, Banknote, CheckCircle2, ShoppingBag, Printer } from 'lucide-react'; // Printer ikonu eklendi
 import { addDoc, collection } from 'firebase/firestore';
 import { db, appId, auth } from '../services/firebase';
 import { formatCurrency } from '../utils/helpers';
 import { CATEGORIES } from '../utils/constants';
 import Receipt from '../components/Receipt'; // Fiş bileşeni eklendi
+
+// 👇 MEMOIZED PRODUCT ITEM COMPONENT
+const ProductItem = memo(({ product, onAdd }) => {
+    return (
+        <button
+            onClick={() => onAdd(product)}
+            className="bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-indigo-500/50 p-4 rounded-2xl flex flex-col justify-between h-32 transition-all active:scale-95 group"
+        >
+            <div className="flex justify-between items-start w-full">
+                <span className="font-bold text-slate-200 text-left line-clamp-2">{product.name}</span>
+                <div className="bg-slate-900 p-1.5 rounded-lg text-indigo-400 group-hover:text-white transition-colors"><Plus size={16}/></div>
+            </div>
+            <span className="font-extrabold text-emerald-400 text-lg self-start">{formatCurrency(product.price)} ₺</span>
+        </button>
+    );
+});
+
+ProductItem.displayName = 'ProductItem';
 
 const CashierPOS = ({ products }) => {
     const [cart, setCart] = useState([]);
@@ -16,7 +34,7 @@ const CashierPOS = ({ products }) => {
     const [printData, setPrintData] = useState(null);
 
     // --- SEPET İŞLEMLERİ ---
-    const addToCart = (product) => {
+    const addToCart = useCallback((product) => {
         setCart(prev => {
             const existing = prev.find(item => item.id === product.id);
             if (existing) {
@@ -24,7 +42,7 @@ const CashierPOS = ({ products }) => {
             }
             return [...prev, { ...product, quantity: 1 }];
         });
-    };
+    }, []);
 
     const updateQuantity = (id, delta) => {
         setCart(prev => prev.map(item => {
@@ -94,9 +112,9 @@ const CashierPOS = ({ products }) => {
     };
 
     // --- FİLTRELEME ---
-    const filteredProducts = products.filter(p => 
+    const filteredProducts = useMemo(() => products.filter(p =>
         selectedCategory === 'Tümü' || p.category === selectedCategory
-    );
+    ), [products, selectedCategory]);
 
     return (
         <div className="h-[calc(100vh-100px)] flex flex-col lg:flex-row gap-6 animate-in fade-in duration-500">
@@ -115,17 +133,11 @@ const CashierPOS = ({ products }) => {
                 <div className="flex-1 overflow-y-auto custom-scrollbar pr-2">
                     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
                         {filteredProducts.map(p => (
-                            <button 
+                            <ProductItem
                                 key={p.id} 
-                                onClick={() => addToCart(p)}
-                                className="bg-slate-800 hover:bg-slate-750 border border-slate-700 hover:border-indigo-500/50 p-4 rounded-2xl flex flex-col justify-between h-32 transition-all active:scale-95 group"
-                            >
-                                <div className="flex justify-between items-start w-full">
-                                    <span className="font-bold text-slate-200 text-left line-clamp-2">{p.name}</span>
-                                    <div className="bg-slate-900 p-1.5 rounded-lg text-indigo-400 group-hover:text-white transition-colors"><Plus size={16}/></div>
-                                </div>
-                                <span className="font-extrabold text-emerald-400 text-lg self-start">{formatCurrency(p.price)} ₺</span>
-                            </button>
+                                product={p}
+                                onAdd={addToCart}
+                            />
                         ))}
                     </div>
                 </div>
