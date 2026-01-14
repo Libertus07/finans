@@ -1,0 +1,3 @@
+## 2025-05-18 - [Anti-Pattern: Global State in App.jsx]
+**Learning:** `App.jsx` holds all application state (products, transactions, auth, etc.) and passes it down. This causes the entire component tree to re-render whenever ANY state updates (e.g., a single transaction add triggers re-render of Dashboard, Products, etc.).
+**Action:** Always wrap page-level components (Dashboard, Transactions, etc.) in `React.memo` to isolate them from unrelated global state updates. Future architectural refactor should consider Context API or a state management library to avoid prop drilling and global re-renders.

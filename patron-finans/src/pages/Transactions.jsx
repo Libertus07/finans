@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Trash2, PlusCircle, MinusCircle, Zap, Settings, X, RefreshCw, FileText, CreditCard, Banknote, Smartphone, ChevronDown, History, Filter, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { addDoc, deleteDoc, updateDoc, doc, collection, writeBatch } from 'firebase/firestore';
 import { db, appId, auth } from '../services/firebase';
 import { formatCurrency, getSubMethod, formatDate } from '../utils/helpers';
 import { THEME } from '../utils/constants';
 
-const Transactions = ({ transactions, quickActions, isPatron }) => {
+const Transactions = memo(({ transactions, quickActions, isPatron }) => {
     const [isEditingShortcuts, setIsEditingShortcuts] = useState(false);
     const [newTrans, setNewTrans] = useState({ 
         date: new Date().toISOString().split('T')[0], 
@@ -139,6 +139,6 @@ const Transactions = ({ transactions, quickActions, isPatron }) => {
              </div>
           </div>
     );
-};
+});
 
 export default Transactions;
