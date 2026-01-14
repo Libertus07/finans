@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { LayoutGrid, Coffee, X, CheckCircle2, ShoppingBag, CreditCard, Banknote, Plus, Minus, Filter, Armchair, Sun, Cloud, Home, ArrowUp, Printer } from 'lucide-react'; // Printer eklendi
 import { doc, updateDoc, addDoc, collection } from 'firebase/firestore';
 import { db, appId, auth } from '../services/firebase';
@@ -6,7 +6,7 @@ import { formatCurrency } from '../utils/helpers';
 import { CATEGORIES } from '../utils/constants';
 import Receipt from '../components/Receipt'; // Fiş bileşeni eklendi
 
-const Tables = ({ tables, products }) => {
+const Tables = memo(({ tables, products }) => {
     const [selectedTable, setSelectedTable] = useState(null);
     const [selectedCategory, setSelectedCategory] = useState('Tümü');
     const [activeZone, setActiveZone] = useState('Tümü');
@@ -217,6 +217,6 @@ const Tables = ({ tables, products }) => {
             <Receipt data={printData} />
         </div>
     );
-};
+});
 
 export default Tables;

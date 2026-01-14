@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Coffee, Plus, Minus, Trash2, CreditCard, Banknote, CheckCircle2, ShoppingBag, Printer } from 'lucide-react'; // Printer ikonu eklendi
 import { addDoc, collection } from 'firebase/firestore';
 import { db, appId, auth } from '../services/firebase';
@@ -6,7 +6,7 @@ import { formatCurrency } from '../utils/helpers';
 import { CATEGORIES } from '../utils/constants';
 import Receipt from '../components/Receipt'; // Fiş bileşeni eklendi
 
-const CashierPOS = ({ products }) => {
+const CashierPOS = memo(({ products }) => {
     const [cart, setCart] = useState([]);
     const [selectedCategory, setSelectedCategory] = useState('Tümü');
     const [processing, setProcessing] = useState(false);
@@ -196,6 +196,6 @@ const CashierPOS = ({ products }) => {
             <Receipt data={printData} />
         </div>
     );
-};
+});
 
 export default CashierPOS;

@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { BarChart3, FileText, TrendingUp, PieChart as PieIcon } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { formatCurrency, formatDate } from '../utils/helpers';
 import { COLORS } from '../utils/constants';
 
-const Stats = ({ transactions, products }) => {
+const Stats = memo(({ transactions, products }) => {
     const [reportFilter, setReportFilter] = useState('month');
 
     // Filtreleme
@@ -127,6 +127,6 @@ const Stats = ({ transactions, products }) => {
              </div>
         </div>
     );
-};
+});
 
 export default Stats;
