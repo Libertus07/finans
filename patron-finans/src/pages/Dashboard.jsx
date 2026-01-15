@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 import { formatCurrency } from '../utils/helpers';
 
-const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, tables = [] }) => {
+const Dashboard = React.memo(({ stats, transactions, monthlyGoal, calculateFutureCashflow, tables = [] }) => {
     // Veri yüklenmediyse koruma (Loading ekranı)
     if (!stats || !transactions) return <div className="p-10 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-indigo-500 rounded-full border-t-transparent"></div></div>;
 
@@ -247,6 +247,6 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
             </div>
         </div>
     );
-};
+});
 
 export default Dashboard;
