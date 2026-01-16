@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { 
     Wallet, TrendingUp, Activity, AlertOctagon, 
     Target, Clock, Zap, ArrowUpRight, 
@@ -11,6 +11,32 @@ import {
 import { formatCurrency } from '../utils/helpers';
 
 const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, tables = [] }) => {
+    // Grafik Verisi (Son 7 Gün)
+    const chartData = useMemo(() => {
+        if (!transactions) return [];
+
+        const last7Days = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date();
+            d.setDate(d.getDate() - i);
+            last7Days.push({
+                dateStr: d.toISOString().split('T')[0],
+                name: d.toLocaleDateString('tr-TR', { weekday: 'short' }),
+                income: 0
+            });
+        }
+
+        const dateMap = new Map(last7Days.map(d => [d.dateStr, d]));
+
+        transactions.forEach(t => {
+            if (t.type === 'income' && dateMap.has(t.date)) {
+                dateMap.get(t.date).income += Number(t.amount);
+            }
+        });
+
+        return last7Days.map(({name, income}) => ({name, income}));
+    }, [transactions]);
+
     // Veri yüklenmediyse koruma (Loading ekranı)
     if (!stats || !transactions) return <div className="p-10 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-indigo-500 rounded-full border-t-transparent"></div></div>;
 
@@ -41,16 +67,6 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     const totalTables = tables.length || 50; 
     const occupiedTables = tables.filter(t => t.status === 'occupied').length || 0;
     const occupancyRate = (occupiedTables / totalTables) * 100;
-
-    // Grafik Verisi (Son 7 Gün)
-    const chartData = [];
-    for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dateStr = d.toISOString().split('T')[0];
-        const dayIncome = transactions.filter(t => t.date === dateStr && t.type === 'income').reduce((a,b) => a + Number(b.amount), 0);
-        chartData.push({ name: d.toLocaleDateString('tr-TR', { weekday: 'short' }), income: dayIncome });
-    }
 
     const recentSales = transactions.slice(0, 5);
 
@@ -249,4 +265,4 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);
