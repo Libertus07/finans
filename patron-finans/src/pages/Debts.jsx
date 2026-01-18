@@ -106,4 +106,4 @@ const Debts = ({ debts, stats }) => {
     );
 };
 
-export default Debts;
+export default React.memo(Debts);

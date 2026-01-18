@@ -141,4 +141,4 @@ const Transactions = ({ transactions, quickActions, isPatron }) => {
     );
 };
 
-export default Transactions;
+export default React.memo(Transactions);
