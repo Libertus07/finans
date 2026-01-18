@@ -1,0 +1,3 @@
+## 2024-05-23 - [Performance] Unstable Props Defeat React.memo
+**Learning:** Helper functions defined inside component bodies (like `getProfitabilityWarnings` in `App.jsx`) are recreated on every render. Passing these as props to child components makes `React.memo` useless, causing unnecessary re-renders of heavy components (like `Dashboard`) even if their data hasn't changed.
+**Action:** Move helper functions outside the component if possible, use `useCallback`, or remove unused props to avoid passing unstable references. Wrap heavy page components in `React.memo` to isolate them from unrelated global state updates.
