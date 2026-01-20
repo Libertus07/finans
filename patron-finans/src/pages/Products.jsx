@@ -220,4 +220,5 @@ const Products = ({ products, isPatron }) => {
     );
 };
 
-export default Products;
+// ⚡ Performance: Memoized to prevent re-rendering the large product list when menu or unrelated state updates.
+export default React.memo(Products);
