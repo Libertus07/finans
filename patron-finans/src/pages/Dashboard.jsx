@@ -249,4 +249,5 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+// ⚡ Performance: Memoized to prevent re-renders when global state (like menu) changes but data props remain stable.
+export default React.memo(Dashboard);

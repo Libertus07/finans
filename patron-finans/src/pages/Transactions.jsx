@@ -141,4 +141,5 @@ const Transactions = ({ transactions, quickActions, isPatron }) => {
     );
 };
 
-export default Transactions;
+// ⚡ Performance: Memoized to avoid unnecessary re-renders on global state changes.
+export default React.memo(Transactions);
