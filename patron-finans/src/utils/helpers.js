@@ -1,10 +1,14 @@
+// Cached formatters to prevent creating new instances on every render
+const CURRENCY_FORMATTER = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const DATE_FORMATTER = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' });
+
 // Para birimi formatla (1.250,00 ₺ gibi)
 export const formatCurrency = (amount) => 
-    new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+    CURRENCY_FORMATTER.format(amount);
   
 // Tarih formatla (12 Ara gibi)
 export const formatDate = (dateStr) => 
-    new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+    DATE_FORMATTER.format(new Date(dateStr));
   
 // Ödeme yöntemini güzel gösteren fonksiyon
 export const getSubMethod = (trans) => {
