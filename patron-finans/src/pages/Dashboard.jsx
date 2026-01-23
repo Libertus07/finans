@@ -249,4 +249,5 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+// Memoized to prevent heavy re-renders on parent state changes
+export default React.memo(Dashboard);

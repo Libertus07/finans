@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react'; // lazy ve Suspense eklendi
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'; // lazy ve Suspense eklendi
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { Loader2, Menu, Coffee } from 'lucide-react';
@@ -118,7 +118,8 @@ export default function PatronFinancePro() {
       return { estimatedMonthlyIncome, totalFixedCosts: stats.totalMonthlyFixedCosts, estimatedMonthlyStockExpense: avgDailyStockExpense * 30, estimatedNetProfit };
   }, [stats.monthlyIncome, stats.totalMonthlyFixedCosts, transactions]);
 
-  const getProfitabilityWarnings = () => {
+  // Memoized to prevent unstable prop reference
+  const getProfitabilityWarnings = useCallback(() => {
       const minProfitMargin = 0.40;
       return products.map(p => {
           const margin = p.price > 0 ? (p.price - p.cost) / p.price : 0;
@@ -126,7 +127,7 @@ export default function PatronFinancePro() {
           if (margin < minProfitMargin) warning = `Marj Düşük (%${(margin * 100).toFixed(0)})`;
           return { ...p, warning };
       }).filter(p => p.warning !== null);
-  };
+  }, [products]);
 
   const renderContent = () => {
     // --- KASİYER YETKİ KONTROLÜ ---
