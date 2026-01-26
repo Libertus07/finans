@@ -249,4 +249,5 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+// Optimized with React.memo to prevent unnecessary re-renders when parent state (like mobile menu) changes
+export default React.memo(Dashboard);
