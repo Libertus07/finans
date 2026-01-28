@@ -1,0 +1,9 @@
+
+> patron-finans@0.0.0 dev
+> vite --host
+
+
+  VITE v7.2.6  ready in 269 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: http://192.168.0.2:5173/

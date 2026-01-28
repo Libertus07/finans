@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { LayoutDashboard, Wallet, FileText, Coffee, ChefHat, Coins, BarChart3, MessageSquare, Settings, User, Calculator, LayoutGrid } from 'lucide-react';
 import { THEME } from '../utils/constants';
 
@@ -68,4 +68,6 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, setIsMobileMenuOpen, userR
   );
 };
 
-export default Sidebar;
+// Memoizing Sidebar prevents unnecessary re-renders when parent App updates due to data changes (transactions, stats),
+// since Sidebar only depends on stable props (navigation state).
+export default memo(Sidebar);
