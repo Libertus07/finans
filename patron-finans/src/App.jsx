@@ -29,7 +29,7 @@ export default function PatronFinancePro() {
   const [userRole, setUserRole] = useState(null);
   const [activeTab, setActiveTab] = useState('pos'); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   
   // Data States
   const [transactions, setTransactions] = useState([]);
@@ -44,13 +44,16 @@ export default function PatronFinancePro() {
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
   const [marketRates] = useState(INITIAL_MARKET_RATES);
   
+  const handleLogin = (role) => {
+    setLoading(true);
+    setUserRole(role);
+    if (role === 'kasiyer') setActiveTab('pos');
+    else setActiveTab('dashboard');
+  };
+
   // 1. Auth
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    if (userRole === null) { setLoading(false); return; }
-    
-    if (userRole === 'kasiyer') setActiveTab('pos');
-    else setActiveTab('dashboard');
+    if (userRole === null) return;
 
     const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); } };
     initAuth();
@@ -183,7 +186,7 @@ export default function PatronFinancePro() {
   };
 
   if (loading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-indigo-500"><Loader2 className="animate-spin" size={40}/></div>;
-  if (userRole === null) return <AuthScreen setUserRole={setUserRole} />;
+  if (userRole === null) return <AuthScreen setUserRole={handleLogin} />;
 
   return (
     <div className={`min-h-screen ${THEME.bg} text-slate-200 font-sans flex`}>
