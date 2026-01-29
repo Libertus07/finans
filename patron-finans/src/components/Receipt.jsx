@@ -4,7 +4,7 @@ import { formatCurrency } from '../utils/helpers';
 const Receipt = forwardRef(({ data }, ref) => {
     if (!data) return null;
 
-    const { title, type, date, items, total } = data;
+    const { title, type, items, total } = data;
 
     return (
         <div ref={ref} id="printable-receipt" className="hidden print:block p-4 w-[80mm] mx-auto bg-white text-black font-mono text-xs leading-tight">

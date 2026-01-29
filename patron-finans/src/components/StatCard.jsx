@@ -16,7 +16,7 @@ const StatCard = ({ title, value, subValue, icon: Icon, color, trend }) => {
           <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
         </div>
         <div className={`p-2 rounded-lg ${c.bg}/10 ${c.text}`}>
-          <Icon size={20} />
+          {Icon && <Icon size={20} />}
         </div>
       </div>
       {subValue && (
