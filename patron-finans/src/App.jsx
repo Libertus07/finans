@@ -42,10 +42,11 @@ export default function PatronFinancePro() {
   
   const [fixedCosts, setFixedCosts] = useState({ rent: 0, staff: 0, bills: 0, other: 0 });
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
-  const [marketRates, setMarketRates] = useState(INITIAL_MARKET_RATES);
+  const [marketRates] = useState(INITIAL_MARKET_RATES);
   
   // 1. Auth
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userRole === null) { setLoading(false); return; }
     
     if (userRole === 'kasiyer') setActiveTab('pos');
