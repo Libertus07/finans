@@ -29,7 +29,7 @@ export default function PatronFinancePro() {
   const [userRole, setUserRole] = useState(null);
   const [activeTab, setActiveTab] = useState('pos'); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   
   // Data States
   const [transactions, setTransactions] = useState([]);
@@ -42,14 +42,18 @@ export default function PatronFinancePro() {
   
   const [fixedCosts, setFixedCosts] = useState({ rent: 0, staff: 0, bills: 0, other: 0 });
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
-  const [marketRates, setMarketRates] = useState(INITIAL_MARKET_RATES);
+  const [marketRates] = useState(INITIAL_MARKET_RATES);
   
+  const handleLogin = (role) => {
+    setLoading(true);
+    setUserRole(role);
+    if (role === 'kasiyer') setActiveTab('pos');
+    else setActiveTab('dashboard');
+  };
+
   // 1. Auth
   useEffect(() => {
-    if (userRole === null) { setLoading(false); return; }
-    
-    if (userRole === 'kasiyer') setActiveTab('pos');
-    else setActiveTab('dashboard');
+    if (userRole === null) return;
 
     const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); } };
     initAuth();
@@ -118,16 +122,6 @@ export default function PatronFinancePro() {
       return { estimatedMonthlyIncome, totalFixedCosts: stats.totalMonthlyFixedCosts, estimatedMonthlyStockExpense: avgDailyStockExpense * 30, estimatedNetProfit };
   }, [stats.monthlyIncome, stats.totalMonthlyFixedCosts, transactions]);
 
-  const getProfitabilityWarnings = () => {
-      const minProfitMargin = 0.40;
-      return products.map(p => {
-          const margin = p.price > 0 ? (p.price - p.cost) / p.price : 0;
-          let warning = null;
-          if (margin < minProfitMargin) warning = `Marj Düşük (%${(margin * 100).toFixed(0)})`;
-          return { ...p, warning };
-      }).filter(p => p.warning !== null);
-  };
-
   const renderContent = () => {
     // --- KASİYER YETKİ KONTROLÜ ---
     if (userRole === 'kasiyer') {
@@ -146,7 +140,7 @@ export default function PatronFinancePro() {
 
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} getProfitabilityWarnings={getProfitabilityWarnings} tables={tables}/>;
+        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} tables={tables}/>;
       
       case 'zreport':
         return <ZReport transactions={transactions} />;
@@ -192,7 +186,7 @@ export default function PatronFinancePro() {
   };
 
   if (loading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-indigo-500"><Loader2 className="animate-spin" size={40}/></div>;
-  if (userRole === null) return <AuthScreen setUserRole={setUserRole} />;
+  if (userRole === null) return <AuthScreen setUserRole={handleLogin} />;
 
   return (
     <div className={`min-h-screen ${THEME.bg} text-slate-200 font-sans flex`}>

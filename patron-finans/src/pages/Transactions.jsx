@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Trash2, PlusCircle, MinusCircle, Zap, Settings, X, RefreshCw, FileText, CreditCard, Banknote, Smartphone, ChevronDown, History, Filter, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { addDoc, deleteDoc, updateDoc, doc, collection, writeBatch } from 'firebase/firestore';
+import { addDoc, deleteDoc, doc, collection, writeBatch } from 'firebase/firestore';
 import { db, appId, auth } from '../services/firebase';
 import { formatCurrency, getSubMethod, formatDate } from '../utils/helpers';
 import { THEME } from '../utils/constants';
