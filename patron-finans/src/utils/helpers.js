@@ -1,10 +1,11 @@
+const currencyFormatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const dateFormatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' });
+
 // Para birimi formatla (1.250,00 ₺ gibi)
-export const formatCurrency = (amount) => 
-    new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+export const formatCurrency = (amount) => currencyFormatter.format(amount);
   
 // Tarih formatla (12 Ara gibi)
-export const formatDate = (dateStr) => 
-    new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+export const formatDate = (dateStr) => dateFormatter.format(new Date(dateStr));
   
 // Ödeme yöntemini güzel gösteren fonksiyon
 export const getSubMethod = (trans) => {
