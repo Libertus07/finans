@@ -68,4 +68,5 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, setIsMobileMenuOpen, userR
   );
 };
 
-export default Sidebar;
+// Memoize Sidebar to prevent unnecessary re-renders when parent state (like transactions) updates
+export default React.memo(Sidebar);
