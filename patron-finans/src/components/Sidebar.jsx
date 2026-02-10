@@ -68,4 +68,6 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, setIsMobileMenuOpen, userR
   );
 };
 
-export default Sidebar;
+// ⚡ Bolt: Memoized to prevent re-renders when App.jsx updates data (transactions, etc.)
+// Sidebar only depends on navigation state, which is stable.
+export default React.memo(Sidebar);
