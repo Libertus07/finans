@@ -68,4 +68,7 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, setIsMobileMenuOpen, userR
   );
 };
 
-export default Sidebar;
+// ⚡ Bolt: React.memo ile sarmalandı. App.jsx her render olduğunda (örneğin veri geldiğinde)
+// Sidebar'ın gereksiz yere tekrar render edilmesini engeller.
+// Sadece activeTab veya userRole değiştiğinde render olur.
+export default React.memo(Sidebar);

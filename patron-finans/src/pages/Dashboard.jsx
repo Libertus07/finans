@@ -249,4 +249,6 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+// ⚡ Bolt: React.memo ile sarmalandı. App.jsx içindeki diğer state değişiklikleri
+// (örneğin ürünler veya ayarlar değiştiğinde) Dashboard'un gereksiz render olmasını engeller.
+export default React.memo(Dashboard);
