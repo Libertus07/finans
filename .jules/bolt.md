@@ -1,7 +1,6 @@
-## 2024-02-12 - Dependency Noise Management
-**Learning:** `npm install` in this environment generates significant noise in `package-lock.json` (removing peer dependencies), which can be flagged in code reviews.
-**Action:** Always revert `package-lock.json` using `restore_file` if no dependencies were explicitly added, to keep PRs clean.
-
-## 2024-02-12 - Unused Props Preventing Memoization
-**Learning:** Helper functions defined in parent components and passed as props create new references on every render, defeating `React.memo` in children.
-**Action:** Remove unused props if found, or use `useCallback` to stabilize functions before passing them to memoized components.
+## 2024-02-12 - Netlify Deployment and Routing
+**Learning:** Deploying a Vite SPA from a subdirectory on Netlify requires specific configuration to handle routing and build context. `vite build --base=./` breaks client-side routing.
+**Action:**
+1. Use `netlify.toml` in the root with `base = "subdir"`, `publish = "dist"`, and `command = "npm run build"`.
+2. Add `_redirects` file in `public/` with `/* /index.html 200`.
+3. Ensure `vite.config.js` and build scripts do **not** use relative base paths (`./`) for production builds intended for root domain serving.
