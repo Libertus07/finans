@@ -3,7 +3,8 @@ import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 // Daha önce oluşturduğumuz sabitleri çağırıyoruz
 import { THEME, COLOR_MAP } from '../utils/constants'; 
 
-const StatCard = ({ title, value, subValue, icon: Icon, color, trend }) => {
+// eslint-disable-next-line no-unused-vars
+const StatCard = ({ title, value, subValue, icon: _Icon, color, trend }) => {
   // Renk haritasından doğru rengi bul
   const c = COLOR_MAP[color] || COLOR_MAP.indigo; 
 
@@ -16,7 +17,7 @@ const StatCard = ({ title, value, subValue, icon: Icon, color, trend }) => {
           <h3 className="text-2xl font-bold text-white mt-1">{value}</h3>
         </div>
         <div className={`p-2 rounded-lg ${c.bg}/10 ${c.text}`}>
-          <Icon size={20} />
+          <_Icon size={20} />
         </div>
       </div>
       {subValue && (

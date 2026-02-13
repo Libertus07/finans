@@ -29,7 +29,7 @@ export default function PatronFinancePro() {
   const [userRole, setUserRole] = useState(null);
   const [activeTab, setActiveTab] = useState('pos'); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   
   // Data States
   const [transactions, setTransactions] = useState([]);
@@ -42,19 +42,22 @@ export default function PatronFinancePro() {
   
   const [fixedCosts, setFixedCosts] = useState({ rent: 0, staff: 0, bills: 0, other: 0 });
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
-  const [marketRates, setMarketRates] = useState(INITIAL_MARKET_RATES);
+  const [marketRates] = useState(INITIAL_MARKET_RATES);
   
   // 1. Auth
   useEffect(() => {
-    if (userRole === null) { setLoading(false); return; }
-    
-    if (userRole === 'kasiyer') setActiveTab('pos');
-    else setActiveTab('dashboard');
+    if (userRole === null) return;
 
-    const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); } };
+    const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); setLoading(false); } };
     initAuth();
     return onAuthStateChanged(auth, (currentUser) => { setUser(currentUser); setLoading(false); });
   }, [userRole]);
+
+  const handleSetUserRole = (role) => {
+    setUserRole(role);
+    if (role === 'kasiyer') setActiveTab('pos');
+    else setActiveTab('dashboard');
+  };
 
   // 2. Veri Çekme
   useEffect(() => {
@@ -182,7 +185,7 @@ export default function PatronFinancePro() {
   };
 
   if (loading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-indigo-500"><Loader2 className="animate-spin" size={40}/></div>;
-  if (userRole === null) return <AuthScreen setUserRole={setUserRole} />;
+  if (userRole === null) return <AuthScreen setUserRole={handleSetUserRole} />;
 
   return (
     <div className={`min-h-screen ${THEME.bg} text-slate-200 font-sans flex`}>
