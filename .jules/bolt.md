@@ -5,3 +5,7 @@
 ## 2025-01-27 - Linting and Build Stability
 **Learning:** CI pipelines may treat lint warnings as fatal errors. Always ensure `npm run lint` passes with zero errors before submitting, even if local builds pass.
 **Action:** Fix all lint errors, including unused variables and hook dependencies, to ensure CI stability.
+
+## 2025-01-27 - Netlify Deployment Configuration
+**Learning:** Netlify deployment for subdirectories requires a root `netlify.toml` with `base` config. `vite.config.js` and `package.json` must NOT use `base: './'` for client-side routing to work with redirects.
+**Action:** Always verify `netlify.toml` and `base` paths when deploying SPAs from subdirectories.
