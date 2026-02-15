@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { 
     Wallet, TrendingUp, Activity, AlertOctagon, 
     Target, Clock, Zap, ArrowUpRight, 
@@ -249,4 +249,6 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+// ⚡ Bolt Optimization: Memoized to prevent re-renders when parent state (e.g. products) changes
+// but Dashboard props (stats, transactions) remain stable.
+export default memo(Dashboard);
