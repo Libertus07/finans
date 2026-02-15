@@ -68,4 +68,4 @@ const Sidebar = ({ activeTab, setActiveTab, isMobile, setIsMobileMenuOpen, userR
   );
 };
 
-export default Sidebar;
+export default React.memo(Sidebar);
