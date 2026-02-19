@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react'; // lazy ve Suspense eklendi
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'; // lazy ve Suspense eklendi
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { Loader2, Menu, Coffee } from 'lucide-react';
@@ -29,7 +29,6 @@ export default function PatronFinancePro() {
   const [userRole, setUserRole] = useState(null);
   const [activeTab, setActiveTab] = useState('pos'); 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
   
   // Data States
   const [transactions, setTransactions] = useState([]);
@@ -42,18 +41,19 @@ export default function PatronFinancePro() {
   
   const [fixedCosts, setFixedCosts] = useState({ rent: 0, staff: 0, bills: 0, other: 0 });
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
-  const [marketRates, setMarketRates] = useState(INITIAL_MARKET_RATES);
+  const [marketRates] = useState(INITIAL_MARKET_RATES);
   
   // 1. Auth
   useEffect(() => {
-    if (userRole === null) { setLoading(false); return; }
+    if (userRole === null) return;
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userRole === 'kasiyer') setActiveTab('pos');
     else setActiveTab('dashboard');
 
     const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); } };
     initAuth();
-    return onAuthStateChanged(auth, (currentUser) => { setUser(currentUser); setLoading(false); });
+    return onAuthStateChanged(auth, (currentUser) => { setUser(currentUser); });
   }, [userRole]);
 
   // 2. Veri Çekme
@@ -118,7 +118,7 @@ export default function PatronFinancePro() {
       return { estimatedMonthlyIncome, totalFixedCosts: stats.totalMonthlyFixedCosts, estimatedMonthlyStockExpense: avgDailyStockExpense * 30, estimatedNetProfit };
   }, [stats.monthlyIncome, stats.totalMonthlyFixedCosts, transactions]);
 
-  const getProfitabilityWarnings = () => {
+  const getProfitabilityWarnings = useCallback(() => {
       const minProfitMargin = 0.40;
       return products.map(p => {
           const margin = p.price > 0 ? (p.price - p.cost) / p.price : 0;
@@ -126,7 +126,7 @@ export default function PatronFinancePro() {
           if (margin < minProfitMargin) warning = `Marj Düşük (%${(margin * 100).toFixed(0)})`;
           return { ...p, warning };
       }).filter(p => p.warning !== null);
-  };
+  }, [products]);
 
   const renderContent = () => {
     // --- KASİYER YETKİ KONTROLÜ ---
@@ -191,7 +191,6 @@ export default function PatronFinancePro() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-slate-950 flex items-center justify-center text-indigo-500"><Loader2 className="animate-spin" size={40}/></div>;
   if (userRole === null) return <AuthScreen setUserRole={setUserRole} />;
 
   return (

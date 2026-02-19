@@ -249,4 +249,4 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+export default React.memo(Dashboard);
