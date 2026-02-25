@@ -45,6 +45,7 @@ export default function PatronFinancePro() {
   
   // 1. Auth
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userRole === null) { setLoading(false); return; }
     
     if (userRole === 'kasiyer') setActiveTab('pos');
