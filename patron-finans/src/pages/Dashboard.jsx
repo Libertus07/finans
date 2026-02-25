@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { 
     Wallet, TrendingUp, Activity, AlertOctagon, 
     Target, Clock, Zap, ArrowUpRight, 
@@ -249,4 +249,4 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+export default memo(Dashboard);
