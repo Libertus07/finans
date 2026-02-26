@@ -1,0 +1,3 @@
+## 2025-05-18 - Unstable Props and Missing Lint Rules
+**Learning:** `App.jsx` defined a helper function `getProfitabilityWarnings` inside the component body, creating a new function reference on every render. This was passed to `Dashboard`, defeating any potential `React.memo` optimization. Furthermore, the lint configuration lacks `eslint-plugin-react`, causing false positive `no-unused-vars` errors when variables are used as JSX components (e.g., `const Icon = ...; return <Icon />`).
+**Action:** Always check for function definitions inside component bodies when optimizing re-renders. When encountering `no-unused-vars` for JSX components in this project, use `// eslint-disable-next-line no-unused-vars`.
