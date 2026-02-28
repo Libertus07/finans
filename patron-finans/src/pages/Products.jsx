@@ -15,7 +15,7 @@ const Products = ({ products, isPatron }) => {
     
     // Sürükle Bırak Referansları
     const dragItem = useRef(null);
-    const dragOverItem = useRef(null);
+
 
     // --- SÜRÜKLE BIRAK (SIRALAMA) ---
     const handleDragStart = (e, id) => { dragItem.current = id; };

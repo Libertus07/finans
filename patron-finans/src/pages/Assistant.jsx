@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Sparkles, Trash2, MessageSquare, User, Loader2, Send } from 'lucide-react';
+import { Sparkles, Trash2, User, Loader2, Send } from 'lucide-react';
 import { formatCurrency } from '../utils/helpers';
 import { GEMINI_API_KEY } from '../utils/constants';
 
@@ -38,6 +38,7 @@ const Assistant = ({ stats }) => {
             const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (!aiResponse) throw new Error("Boş Cevap");
             setChatMessages(prev => [...prev, { role: 'ai', text: aiResponse }]);
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             setChatMessages(prev => [...prev, { role: 'ai', text: generateLocalResponse() }]);
         } finally {
