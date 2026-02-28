@@ -3,6 +3,7 @@ import { ArrowUpRight, ArrowDownRight } from 'lucide-react';
 // Daha önce oluşturduğumuz sabitleri çağırıyoruz
 import { THEME, COLOR_MAP } from '../utils/constants'; 
 
+// eslint-disable-next-line no-unused-vars
 const StatCard = ({ title, value, subValue, icon: Icon, color, trend }) => {
   // Renk haritasından doğru rengi bul
   const c = COLOR_MAP[color] || COLOR_MAP.indigo; 
