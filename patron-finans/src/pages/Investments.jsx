@@ -6,9 +6,12 @@ import { db, appId, auth } from '../services/firebase';
 import { formatCurrency, formatDate } from '../utils/helpers';
 import { INITIAL_MARKET_RATES, COLORS, THEME } from '../utils/constants';
 
-const Investments = ({ investments, marketRates }) => {
+// ⚡ Bolt Optimization:
+// Removed `marketRates` prop. Using `INITIAL_MARKET_RATES` constant directly.
+// Reduces prop drilling, static tracking, and potential re-renders.
+const Investments = ({ investments }) => {
     // Seçili kurun fiyatını otomatik getirmek için helper
-    const getInitialPrice = (type) => marketRates?.[type] || '';
+    const getInitialPrice = (type) => INITIAL_MARKET_RATES?.[type] || '';
 
     const [newInvestment, setNewInvestment] = useState({ 
         date: new Date().toISOString().split('T')[0], 
@@ -57,7 +60,7 @@ const Investments = ({ investments, marketRates }) => {
                 type: 'Gram Altın', 
                 quantity: '', 
                 buyPrice: '', 
-                currentPrice: marketRates['Gram Altın'] || '' 
+                currentPrice: INITIAL_MARKET_RATES['Gram Altın'] || ''
             });
         } catch (error) {
             console.error("Yatırım eklenemedi:", error);
@@ -176,7 +179,7 @@ const Investments = ({ investments, marketRates }) => {
                                 <label className="text-xs text-slate-500 block mb-1">Varlık Türü</label>
                                 <select 
                                     value={newInvestment.type} 
-                                    onChange={(e) => setNewInvestment({...newInvestment, type: e.target.value, currentPrice: marketRates[e.target.value] || ''})} 
+                                    onChange={(e) => setNewInvestment({...newInvestment, type: e.target.value, currentPrice: INITIAL_MARKET_RATES[e.target.value] || ''})}
                                     className="w-full bg-slate-900 border border-slate-600 rounded-lg p-3 text-white outline-none focus:border-emerald-500 transition-all">
                                     {Object.keys(INITIAL_MARKET_RATES).map(rate => <option key={rate} value={rate}>{rate}</option>)}
                                 </select>

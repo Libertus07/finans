@@ -1,8 +1,7 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Vercel'da kaynak dosyalarının (JS/CSS) doğru yüklenmesi için base ayarı eklendi.
+// Netlify deployments should not use relative base paths as it breaks SPA routing.
 export default defineConfig({
-  base: './', 
   plugins: [react()],
 });
