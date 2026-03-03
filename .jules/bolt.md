@@ -1,0 +1,3 @@
+## 2024-05-18 - Intl Formatter Initialization Overhead
+**Learning:** `Intl` formatters (like `Intl.NumberFormat` and `Intl.DateTimeFormat`) have a relatively high initialization cost. When formatting functions like `formatCurrency` are used heavily in components that re-render frequently or within loops (e.g., rendering many transactions or lists), instantiating a new formatter on every call can cause noticeable performance overhead and memory churn. The `toLocaleDateString` function also implicitly instantiates an `Intl.DateTimeFormat` instance.
+**Action:** Always instantiate `Intl` formatters at the module level (caching them) rather than inside the formatting functions or components. Use the cached `format` method.
