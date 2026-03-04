@@ -15,6 +15,7 @@ const Products = ({ products, isPatron }) => {
     
     // Sürükle Bırak Referansları
     const dragItem = useRef(null);
+    // eslint-disable-next-line no-unused-vars
     const dragOverItem = useRef(null);
 
     // --- SÜRÜKLE BIRAK (SIRALAMA) ---
