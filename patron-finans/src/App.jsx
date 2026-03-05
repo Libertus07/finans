@@ -42,13 +42,15 @@ export default function PatronFinancePro() {
   
   const [fixedCosts, setFixedCosts] = useState({ rent: 0, staff: 0, bills: 0, other: 0 });
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
-  const [marketRates, setMarketRates] = useState(INITIAL_MARKET_RATES);
   
   // 1. Auth
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userRole === null) { setLoading(false); return; }
     
+
     if (userRole === 'kasiyer') setActiveTab('pos');
+
     else setActiveTab('dashboard');
 
     const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); } };
@@ -172,7 +174,7 @@ export default function PatronFinancePro() {
           return <Recipe ingredients={ingredients} />;
           
       case 'investments':
-          return <Investments investments={investments} marketRates={marketRates} />;
+          return <Investments investments={investments} marketRates={INITIAL_MARKET_RATES} />;
       
       case 'stats':
           return <Stats transactions={transactions} products={products} />;
