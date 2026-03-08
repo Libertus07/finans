@@ -10,6 +10,11 @@ import {
 } from 'recharts';
 import { formatCurrency } from '../utils/helpers';
 
+// ⚡ Bolt Optimization: Cache Intl formatters at module level to prevent
+// expensive instantiations on every render/function call.
+const longDateFormatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' });
+const shortWeekdayFormatter = new Intl.DateTimeFormat('tr-TR', { weekday: 'short' });
+
 const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, tables = [] }) => {
     // Veri yüklenmediyse koruma (Loading ekranı)
     if (!stats || !transactions) return <div className="p-10 flex justify-center"><div className="animate-spin w-8 h-8 border-4 border-indigo-500 rounded-full border-t-transparent"></div></div>;
@@ -49,7 +54,7 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
         d.setDate(d.getDate() - i);
         const dateStr = d.toISOString().split('T')[0];
         const dayIncome = transactions.filter(t => t.date === dateStr && t.type === 'income').reduce((a,b) => a + Number(b.amount), 0);
-        chartData.push({ name: d.toLocaleDateString('tr-TR', { weekday: 'short' }), income: dayIncome });
+        chartData.push({ name: shortWeekdayFormatter.format(d), income: dayIncome });
     }
 
     const recentSales = transactions.slice(0, 5);
@@ -67,7 +72,7 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
                         Motto <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Yönetim Paneli</span>
                     </h1>
                     <p className="text-slate-400 mt-2 flex items-center gap-2">
-                        <Clock size={16}/> {new Date().toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', weekday: 'long' })}
+                        <Clock size={16}/> {longDateFormatter.format(new Date())}
                     </p>
                 </div>
                 <div className="relative z-10 text-right mt-4 md:mt-0">
