@@ -7,8 +7,11 @@ export const formatCurrency = (amount) =>
     currencyFormatter.format(amount);
   
 // Tarih formatla (12 Ara gibi)
-export const formatDate = (dateStr) => 
-    dateFormatter.format(new Date(dateStr));
+export const formatDate = (dateStr) => {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "Geçersiz Tarih";
+    return dateFormatter.format(d);
+};
   
 // Ödeme yöntemini güzel gösteren fonksiyon
 export const getSubMethod = (trans) => {
