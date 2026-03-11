@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { memo } from 'react';
+// ⚡ Bolt Optimization: Wrap component in React.memo to prevent unnecessary re-renders when parent App.jsx states (like Firebase snapshots) change but Dashboard props do not.
 import { 
     Wallet, TrendingUp, Activity, AlertOctagon, 
     Target, Clock, Zap, ArrowUpRight, 
@@ -249,4 +250,4 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+export default memo(Dashboard);
