@@ -1,0 +1,3 @@
+## 2024-03-12 - Unused Props Defeating React.memo()
+**Learning:** Found a case in `App.jsx` where an unused helper function `getProfitabilityWarnings` was defined inline and passed down to `<Dashboard />`. Even if `React.memo` were applied to `<Dashboard />`, this unstable prop reference would cause it to fail, re-rendering the entire dashboard whenever `App.jsx` updated unrelated state. Furthermore, the dashboard component wasn't even destructuring or using this prop.
+**Action:** When finding missing `React.memo` optimizations, aggressively check the parent component for inline function props or unstable object references passed to it. Removing dead code/unused props is a cleaner fix than wrapping unused functions in `useCallback`.
