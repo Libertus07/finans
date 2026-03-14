@@ -1,0 +1,4 @@
+[build]
+  base = "patron-finans"
+  command = "vite build"
+  publish = "dist"
