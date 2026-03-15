@@ -15,7 +15,10 @@ const dateFormatter = new Intl.DateTimeFormat('tr-TR', {
 export const formatCurrency = (amount) => currencyFormatter.format(amount);
   
 // Tarih formatla (12 Ara gibi)
-export const formatDate = (dateStr) => dateFormatter.format(new Date(dateStr));
+export const formatDate = (dateStr) => {
+    const date = new Date(dateStr);
+    return isNaN(date) ? 'Invalid Date' : dateFormatter.format(date);
+};
   
 // Ödeme yöntemini güzel gösteren fonksiyon
 export const getSubMethod = (trans) => {
