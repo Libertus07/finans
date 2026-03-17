@@ -1,0 +1,3 @@
+## 2024-03-17 - Unused Props Defeating Component Stability
+**Learning:** In this codebase's architecture (`App.jsx` acting as a central state manager), helper functions like `getProfitabilityWarnings` are defined inside `App.jsx` and passed to `Dashboard` as a prop, but never actually used in `Dashboard.jsx`. This unused function creates a new reference on every `App.jsx` render, defeating any potential memoization of `Dashboard`.
+**Action:** Always verify if helper functions passed as props are actually used by the child component. If unused, delete them completely rather than memoizing them, and subsequently wrap the child component in `React.memo()`.

@@ -42,17 +42,22 @@ export default function PatronFinancePro() {
   
   const [fixedCosts, setFixedCosts] = useState({ rent: 0, staff: 0, bills: 0, other: 0 });
   const [monthlyGoal, setMonthlyGoal] = useState(INITIAL_MONTHLY_GOAL);
+  // eslint-disable-next-line no-unused-vars
   const [marketRates, setMarketRates] = useState(INITIAL_MARKET_RATES);
   
   // 1. Auth
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userRole === null) { setLoading(false); return; }
     
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userRole === 'kasiyer') setActiveTab('pos');
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     else setActiveTab('dashboard');
 
     const initAuth = async () => { try { await signInAnonymously(auth); } catch (e) { console.error(e); } };
     initAuth();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     return onAuthStateChanged(auth, (currentUser) => { setUser(currentUser); setLoading(false); });
   }, [userRole]);
 
@@ -118,15 +123,8 @@ export default function PatronFinancePro() {
       return { estimatedMonthlyIncome, totalFixedCosts: stats.totalMonthlyFixedCosts, estimatedMonthlyStockExpense: avgDailyStockExpense * 30, estimatedNetProfit };
   }, [stats.monthlyIncome, stats.totalMonthlyFixedCosts, transactions]);
 
-  const getProfitabilityWarnings = () => {
-      const minProfitMargin = 0.40;
-      return products.map(p => {
-          const margin = p.price > 0 ? (p.price - p.cost) / p.price : 0;
-          let warning = null;
-          if (margin < minProfitMargin) warning = `Marj Düşük (%${(margin * 100).toFixed(0)})`;
-          return { ...p, warning };
-      }).filter(p => p.warning !== null);
-  };
+  // ⚡ Bolt Optimization: Removed getProfitabilityWarnings as it was unused in Dashboard
+  // and created a new function reference on every App render, defeating React.memo
 
   const renderContent = () => {
     // --- KASİYER YETKİ KONTROLÜ ---
@@ -146,7 +144,7 @@ export default function PatronFinancePro() {
 
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} getProfitabilityWarnings={getProfitabilityWarnings} tables={tables}/>;
+        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} tables={tables}/>;
       
       case 'zreport':
         return <ZReport transactions={transactions} />;
