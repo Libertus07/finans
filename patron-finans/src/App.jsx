@@ -118,15 +118,8 @@ export default function PatronFinancePro() {
       return { estimatedMonthlyIncome, totalFixedCosts: stats.totalMonthlyFixedCosts, estimatedMonthlyStockExpense: avgDailyStockExpense * 30, estimatedNetProfit };
   }, [stats.monthlyIncome, stats.totalMonthlyFixedCosts, transactions]);
 
-  const getProfitabilityWarnings = () => {
-      const minProfitMargin = 0.40;
-      return products.map(p => {
-          const margin = p.price > 0 ? (p.price - p.cost) / p.price : 0;
-          let warning = null;
-          if (margin < minProfitMargin) warning = `Marj Düşük (%${(margin * 100).toFixed(0)})`;
-          return { ...p, warning };
-      }).filter(p => p.warning !== null);
-  };
+  // ⚡ Bolt Optimization: Removed getProfitabilityWarnings function and its prop from <Dashboard />
+  // as it was an unused unstable function reference defeating React.memo() optimization.
 
   const renderContent = () => {
     // --- KASİYER YETKİ KONTROLÜ ---
@@ -146,7 +139,7 @@ export default function PatronFinancePro() {
 
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} getProfitabilityWarnings={getProfitabilityWarnings} tables={tables}/>;
+        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} tables={tables}/>;
       
       case 'zreport':
         return <ZReport transactions={transactions} />;
