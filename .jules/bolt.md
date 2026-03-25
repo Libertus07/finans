@@ -1,0 +1,3 @@
+## 2024-03-25 - Unstable Props Defeating React.memo
+**Learning:** In React, passing unused functions (like `getProfitabilityWarnings` in `App.jsx` to `Dashboard`) creates unstable prop references. Since `App.jsx` re-renders frequently, this unstable reference defeats any `React.memo` wrapping on the child component, forcing unnecessary re-renders.
+**Action:** When a function isn't used by a component or its children, completely remove it from the props. If it is used, stabilize it via `useCallback` or move it outside the component if it doesn't rely on component state. Wrapping the child component with `React.memo` is only effective once unstable props are addressed.
