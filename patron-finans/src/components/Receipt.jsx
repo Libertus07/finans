@@ -4,6 +4,7 @@ import { formatCurrency } from '../utils/helpers';
 const Receipt = forwardRef(({ data }, ref) => {
     if (!data) return null;
 
+    // eslint-disable-next-line no-unused-vars
     const { title, type, date, items, total } = data;
 
     return (

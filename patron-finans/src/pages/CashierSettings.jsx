@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, Shield, Info, LogOut, RefreshCw, Loader2 } from 'lucide-react';
+// eslint-disable-next-line no-unused-vars
 import { writeBatch, doc, collection } from 'firebase/firestore'; // Firebase eklendi
 import { db, appId, auth } from '../services/firebase'; // Bağlantı eklendi
 import { INITIAL_TABLES } from '../utils/constants'; // Masa verisi eklendi

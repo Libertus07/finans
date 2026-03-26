@@ -38,6 +38,7 @@ const Assistant = ({ stats }) => {
             const aiResponse = data.candidates?.[0]?.content?.parts?.[0]?.text;
             if (!aiResponse) throw new Error("Boş Cevap");
             setChatMessages(prev => [...prev, { role: 'ai', text: aiResponse }]);
+        // eslint-disable-next-line no-unused-vars
         } catch (error) {
             setChatMessages(prev => [...prev, { role: 'ai', text: generateLocalResponse() }]);
         } finally {
