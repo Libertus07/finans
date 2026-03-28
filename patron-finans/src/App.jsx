@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, lazy, Suspense } from 'react'; // lazy ve Suspense eklendi
+import React, { useState, useEffect, useMemo, useCallback, lazy, Suspense } from 'react'; // lazy ve Suspense eklendi
 import { signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import { collection, doc, onSnapshot, query, orderBy, limit } from 'firebase/firestore';
 import { Loader2, Menu, Coffee } from 'lucide-react';
@@ -118,8 +118,17 @@ export default function PatronFinancePro() {
       return { estimatedMonthlyIncome, totalFixedCosts: stats.totalMonthlyFixedCosts, estimatedMonthlyStockExpense: avgDailyStockExpense * 30, estimatedNetProfit };
   }, [stats.monthlyIncome, stats.totalMonthlyFixedCosts, transactions]);
 
-  // ⚡ Bolt Optimization: Removed unused `getProfitabilityWarnings` function
-  // that was causing an unstable prop reference and forcing `<Dashboard/>` to re-render.
+  // ⚡ Bolt Optimization: Wrapped getProfitabilityWarnings in useCallback
+  // to stabilize the function reference and prevent unnecessary re-renders of <Dashboard />
+  const getProfitabilityWarnings = useCallback(() => {
+      const minProfitMargin = 0.40;
+      return products.map(p => {
+          const margin = p.price > 0 ? (p.price - p.cost) / p.price : 0;
+          let warning = null;
+          if (margin < minProfitMargin) warning = `Marj Düşük (%${(margin * 100).toFixed(0)})`;
+          return { ...p, warning };
+      }).filter(p => p.warning !== null);
+  }, [products]);
 
   const renderContent = () => {
     // --- KASİYER YETKİ KONTROLÜ ---
@@ -139,7 +148,7 @@ export default function PatronFinancePro() {
 
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} tables={tables}/>;
+        return <Dashboard stats={stats} transactions={transactions} monthlyGoal={monthlyGoal} calculateFutureCashflow={calculateFutureCashflow} getProfitabilityWarnings={getProfitabilityWarnings} tables={tables}/>;
       
       case 'zreport':
         return <ZReport transactions={transactions} />;
