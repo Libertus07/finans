@@ -1,0 +1,3 @@
+## 2024-03-31 - React.memo fails when non-primitive props are unstable
+**Learning:** Adding `React.memo` to a component like `Dashboard` is completely ineffective if the parent component passes unstable non-primitive props (like object refs or unmemoized functions). In `App.jsx`, functions passed to `Dashboard` must be wrapped in `useCallback` and objects must be memoized with `useMemo` for `React.memo` to work.
+**Action:** Before slapping `React.memo` on a child, audit all props it receives from the parent. Memoize object variables with `useMemo` and functions with `useCallback` in the parent first. Also, never commit random package-lock.json changes unless explicitly requested.
