@@ -1,0 +1,3 @@
+## 2024-04-10 - Stabilizing Unstable Props for Memoized Child Components
+**Learning:** In architectures like Patron-Finans where `App.jsx` acts as a central state manager passing props down to heavy components (like `Dashboard`), defining helper functions (e.g., `getProfitabilityWarnings`) inline inside `App.jsx` defeats any `React.memo` wrapping on child components because the function reference changes on every render.
+**Action:** When adding `React.memo` to prevent child re-renders, first verify that all props passed to that child from the parent are stable (using `useCallback` for functions or `useMemo` for derived objects).
