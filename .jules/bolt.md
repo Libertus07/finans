@@ -1,0 +1,3 @@
+## 2024-05-18 - React.memo Pitfall with Complex State Managers
+**Learning:** In architectures where a central `App.jsx` acts as a state manager and passes numerous props down to lazily loaded children (like `Dashboard`), wrapping the child in `React.memo` is insufficient if even a single function prop (like `getProfitabilityWarnings`) is recreated on every render. The entire optimization will fail silently.
+**Action:** Always inspect the dependency tree of props being passed to a `React.memo` component to ensure 100% referential stability. When stabilizing one prop, verify the stability of siblings (like `calculateFutureCashflow` which is safely wrapped in `useMemo`).
