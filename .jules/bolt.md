@@ -1,0 +1,3 @@
+## 2024-04-18 - Caching Intl Formatters
+**Learning:** `Intl.NumberFormat` and `Intl.DateTimeFormat` instantiation is surprisingly expensive in JS. When used in a helper function (`formatCurrency`, `formatDate`) that gets called repeatedly inside render loops (like rendering a list of hundreds of transactions or dashboard components), it creates significant memory/CPU overhead and can noticeably degrade rendering performance.
+**Action:** Always instantiate `Intl` formatters at the module scope level (outside the formatting function) so they are created exactly once and reused, rather than recreated on every format call. Ensure to handle `isNaN(date)` explicitly when replacing `toLocaleDateString` with a cached `DateTimeFormat`.
