@@ -1,0 +1,3 @@
+## 2024-04-21 - Caching Intl instances
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside utility functions that are called frequently (like during rendering of large transaction lists) is an expensive operation that causes unnecessary overhead and GC pauses.
+**Action:** When migrating native string formatting methods to `Intl` formatters, ensure they are instantiated at the module level (cached) and reused. Explicitly handle invalid dates when caching `Intl.DateTimeFormat.format()` to preserve original fallback behavior (like returning 'Invalid Date' instead of throwing an error).
