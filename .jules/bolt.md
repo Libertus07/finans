@@ -1,0 +1,3 @@
+## 2024-04-26 - Unstable Props and Memoization
+**Learning:** Helper functions defined inside component bodies (like `App.jsx`) create unstable prop references. If these unstable props are passed down to child components, they defeat `React.memo`, causing unnecessary re-renders of large, expensive components (like `Dashboard`) whenever parent state changes. This is a critical performance bottleneck in route-based architectures where one top-level component manages all state.
+**Action:** When passing helper functions as props, always wrap them in `useCallback` with correct dependencies. Additionally, always wrap large, lazily loaded route components in `React.memo` to shield them from unrelated parent state updates (like a mobile menu toggling or active tab changing).
