@@ -1,0 +1,3 @@
+## 2026-05-02 - Cached Intl Formatters
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside frequently called utility functions (like `formatCurrency` and `formatDate`) creates significant performance overhead during renders, especially for large lists (e.g., Transactions). The `toLocaleDateString()` method gracefully handles invalid dates, while `Intl.DateTimeFormat.format()` throws a `RangeError`, meaning drop-in replacements must explicitly check `isNaN(date)` to maintain safety.
+**Action:** Always instantiate `Intl` formatters at the module level to cache them, and explicitly add `isNaN` checks when replacing native string fallback methods.
