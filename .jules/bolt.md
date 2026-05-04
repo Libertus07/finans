@@ -1,0 +1,3 @@
+## 2024-05-24 - Unused Prop Defeating Memoization in Dashboard
+**Learning:** In App.jsx, the getProfitabilityWarnings helper function is passed to Dashboard but never actually used by it. Because App.jsx serves as a central state manager fetching all business data, any state change triggers a re-render, creating a new reference for getProfitabilityWarnings. This unstable, unused prop silently defeats React.memo on the lazily-loaded Dashboard component, causing cascading re-renders.
+**Action:** Wrap getProfitabilityWarnings in useCallback to stabilize its reference, and wrap Dashboard in React.memo(). Do not delete the function, as it contains business logic that might be intended for future use.
