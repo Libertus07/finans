@@ -1,0 +1,3 @@
+## 2024-05-14 - Unstable Function Props Breaking Memoization
+**Learning:** In `App.jsx`, functions like `getProfitabilityWarnings` are defined inside the component body but not memoized. When passed down as props to lazily loaded components like `Dashboard`, they create unstable references on every render of `App.jsx` (which fetches all state). Even if the child component (like `Dashboard`) does not use the prop, passing it causes `React.memo` to fail because the prop reference changes.
+**Action:** When fixing performance issues related to re-renders from `App.jsx`, wrap these component-defined helper functions (e.g., `getProfitabilityWarnings`) in `useCallback` to stabilize their reference. Or remove the prop if unused.
