@@ -1,0 +1,3 @@
+## 2024-05-16 - Cached Intl Formatters Overhead
+**Learning:** Found an issue where `Intl.NumberFormat` and `Intl.DateTimeFormat` were being re-instantiated constantly within helper methods (`formatCurrency` and `formatDate`) that were called heavily throughout React component rendering lifecycles, especially inside maps over large transaction/product data arrays.
+**Action:** Lift `Intl` formatter instantiations to the module level and reuse them to prevent GC thrashing and performance overhead during frequent list rendering. Note: Always handle edge cases like invalid dates explicitely when moving to `Intl.DateTimeFormat` to preserve native fallbacks like 'Invalid Date'.
