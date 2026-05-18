@@ -249,4 +249,5 @@ const Dashboard = ({ stats, transactions, monthlyGoal, calculateFutureCashflow, 
     );
 };
 
-export default Dashboard;
+// ⚡ Bolt Optimization: Memoize the Dashboard component to prevent re-renders from unrelated state changes in App.jsx
+export default React.memo(Dashboard);
