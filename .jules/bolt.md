@@ -1,0 +1,3 @@
+## 2024-05-19 - Architectural Unstable Props Defeating Memoization
+**Learning:** In this project's architecture where `App.jsx` acts as the central state manager, passing unused inline/helper functions to child components breaks `React.memo`. Specifically, `Dashboard` component was receiving `getProfitabilityWarnings` which wasn't used inside it, but passing the function reference continuously invalidated the memoization.
+**Action:** When adding `React.memo` to lazily loaded child components like `Dashboard`, explicitly verify if inline helper functions passed down from `App.jsx` are actually needed. If unused, remove them from the prop passing. If used, memoize using `useCallback`.
