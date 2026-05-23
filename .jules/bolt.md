@@ -1,0 +1,3 @@
+## 2024-05-23 - Stabilizing Function Props for Lazy Loaded Components
+**Learning:** Helper functions defined inside component bodies (like App.jsx) create unstable prop references that defeat React.memo in child components. Notably, even if the child component doesn't explicitly destructure or use the prop, passing an unstable function will still break memoization.
+**Action:** Always wrap helper functions passed as props in useCallback, and aggressively use React.memo on heavy lazily-loaded child components (like Dashboard) to prevent unnecessary cascading re-renders from central state managers.
