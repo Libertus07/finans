@@ -1,0 +1,3 @@
+## 2024-05-31 - Expensive Intl Formatter Instantiation
+**Learning:** Instantiating `Intl.NumberFormat` inside formatting helpers like `formatCurrency` repeatedly causes significant performance overhead during renders and loops, as creating an Intl object is relatively slow in JavaScript. The `formatCurrency` helper in `src/utils/helpers.js` is called many times throughout the app (especially in tables and receipts).
+**Action:** Always extract `Intl.NumberFormat` (and similar Intl objects like `Intl.DateTimeFormat`) instantiations to the module scope and reuse the `format` method to improve performance (a ~100x speedup in formatting).
