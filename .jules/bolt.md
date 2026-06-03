@@ -1,0 +1,3 @@
+## 2024-06-03 - Cache Intl formatters for performance
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside formatting helpers (which are called dozens of times during list renders) causes a significant performance overhead (~60x slower). When migrating to cached `Intl` formatters, it is critical to explicitly handle invalid dates (using `isNaN(date)`) because `Intl.DateTimeFormat.format()` throws a `RangeError` on invalid dates, unlike the native `toLocaleDateString()` which silently returns "Invalid Date".
+**Action:** Always instantiate `Intl` formatters once at the module level and reuse them, but ensure robust edge-case handling for invalid inputs to avoid application crashes.
