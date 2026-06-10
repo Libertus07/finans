@@ -1,0 +1,3 @@
+## 2024-06-10 - Cache Intl Formatters for High-Frequency Renders
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside utility functions causes immense overhead, especially during list rendering or frequent component updates. Migrating away from native methods like `Date.toLocaleDateString` to a cached `Intl.DateTimeFormat` can yield 50x-100x performance improvements. However, native methods handle invalid dates gracefully (returning 'Invalid Date'), while `Intl.DateTimeFormat.format` throws a `RangeError`.
+**Action:** Always instantiate `Intl` formatters once at the module level. When replacing native date formatting, explicitly check for invalid dates (`isNaN(date)`) to avoid breaking exceptions and maintain fallback strings.
