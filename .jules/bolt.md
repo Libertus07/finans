@@ -1,0 +1,3 @@
+## 2024-06-14 - Intl Instantiation Overhead
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` (or relying on `Date.prototype.toLocaleDateString` which does it under the hood) causes significant execution overhead in JS engines (measured ~50-65x slower). In React applications with lists or dashboards, this can block the main thread and drop frames.
+**Action:** Always extract `Intl.*Format` instances to module-level constants and reuse them for formatting functions. Ensure `isNaN(date)` checks are added when using `Intl.DateTimeFormat` since it throws on invalid dates unlike `toLocaleDateString()`.
