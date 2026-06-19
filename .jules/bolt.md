@@ -1,0 +1,3 @@
+## 2024-06-19 - Cache Intl instances
+**Learning:** Recreating `Intl.NumberFormat` and `Intl.DateTimeFormat` on every function call (e.g., inside `formatCurrency` and `formatDate`) is computationally expensive and causes significant overhead during large list renders. However, directly swapping to `Intl.DateTimeFormat().format(new Date(dateStr))` is dangerous because it throws a `RangeError: Invalid time value` for invalid dates, unlike `toLocaleDateString` which safely returns "Invalid Date".
+**Action:** When optimizing date formatting with cached `Intl` instances, always explicitly check for invalid dates (`isNaN(date)`) to prevent runtime exceptions and preserve fallback behavior.
