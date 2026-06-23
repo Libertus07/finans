@@ -1,0 +1,3 @@
+## 2024-06-23 - NumberFormat/DateTimeFormat Instantiation Overhead
+**Learning:** Instantiating `Intl.NumberFormat` and `Date.toLocaleDateString` inside formatting helpers like `formatCurrency` and `formatDate` introduces massive overhead (up to ~100x slower), as seen in `patron-finans/src/utils/helpers.js`. Since these helpers are likely used inside mapping functions across the whole application (e.g. lists, transactions, dashboards), caching the formatter instances module-wide offers an enormous and immediate performance boost.
+**Action:** Always extract `Intl` formatter instances to module-scoped constants instead of creating them per-call. For `formatDate`, explicit validation with `isNaN(date)` is required to prevent fallback breaking when using `DateTimeFormat`.
