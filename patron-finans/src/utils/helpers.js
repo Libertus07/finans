@@ -1,15 +1,10 @@
 // Para birimi formatla (1.250,00 ₺ gibi)
-// ⚡ Bolt Optimization: Cache Intl formatter instance instead of creating new ones per call
-const currencyFormatter = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-export const formatCurrency = (amount) => currencyFormatter.format(amount);
+export const formatCurrency = (amount) =>
+    new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
   
 // Tarih formatla (12 Ara gibi)
-// ⚡ Bolt Optimization: Cache Intl formatter instance and avoid toLocaleDateString overhead
-const dateFormatter = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' });
-export const formatDate = (dateStr) => {
-    const d = new Date(dateStr);
-    return isNaN(d) ? 'Invalid Date' : dateFormatter.format(d);
-};
+export const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
   
 // Ödeme yöntemini güzel gösteren fonksiyon
 export const getSubMethod = (trans) => {
