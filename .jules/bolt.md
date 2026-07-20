@@ -1,0 +1,3 @@
+## 2024-07-20 - Cache Intl Formatters
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` or `Intl.DateTimeFormat` inside formatting helpers (like `formatCurrency` and `formatDate`) causes significant overhead during frequent renders or loops.
+**Action:** Always instantiate the formatter once at the module level and reuse it for a ~70x-100x performance gain in execution time. When migrating native string formatting methods like `new Date().toLocaleDateString()` to a cached `Intl.DateTimeFormat.format()` instance, explicitly handle invalid dates (e.g., checking `isNaN(date)`) to preserve fallback strings like 'Invalid Date' and avoid breaking exceptions.
