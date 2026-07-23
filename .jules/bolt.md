@@ -1,0 +1,3 @@
+## 2024-07-23 - Caching Intl Formatters
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` or `Intl.DateTimeFormat` inside utility functions (like `formatCurrency` or `formatDate`) causes massive overhead (taking up to 6000ms for 100k calls vs 90ms). When these utilities are called inside frequent renders or loops (e.g. lists of transactions), this creates a major frontend bottleneck. Also `Intl.DateTimeFormat.format()` throws on invalid dates whereas `new Date().toLocaleDateString()` returns "Invalid Date", requiring explicit `isNaN` fallback checks.
+**Action:** Always instantiate `Intl` formatters once at the module scope and reuse them. Remember to handle `isNaN(date)` explicitly when migrating to `Intl.DateTimeFormat`.
