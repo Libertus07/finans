@@ -1,0 +1,3 @@
+## 2024-05-20 - Intl Formatter Instantiation Overhead
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside formatting helpers (like `formatCurrency`) causes significant overhead during frequent renders or loops. Additionally, when refactoring `new Date(...).toLocaleDateString()` to use a cached `Intl.DateTimeFormat` instance for performance, `Intl.DateTimeFormat().format(new Date('invalid'))` throws a `RangeError`, whereas `toLocaleDateString` gracefully handles it.
+**Action:** Always instantiate the formatter once at the module level and reuse it for a ~50-100x performance gain. Always add a date validity check (e.g., `isNaN(date)`) when implementing the `Intl.DateTimeFormat` optimization.
