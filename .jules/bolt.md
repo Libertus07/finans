@@ -1,0 +1,3 @@
+## 2024-05-24 - [Intl Performance Pattern]
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside helpers causes massive performance overhead (e.g., ~85x slower). Additionally, when migrating from `toLocaleDateString()` to a cached `Intl.DateTimeFormat.format()`, the latter throws a RangeError on invalid dates while the former gracefully returns "Invalid Date".
+**Action:** Always extract `new Intl.*` instantiations to module-level constants. When formatting dates with the cached formatter, explicitly check `isNaN(date)` and return "Invalid Date" if true to preserve existing fallback behavior.
