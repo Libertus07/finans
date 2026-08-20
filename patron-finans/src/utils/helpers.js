@@ -1,20 +1,10 @@
-// ⚡ Bolt Performance Optimization:
-// Reusing Intl.NumberFormat and Intl.DateTimeFormat instances is ~100x faster
-// than creating new ones on every call. This reduces CPU overhead during
-// frequent re-renders or when formatting large lists of data.
-const CURRENCY_FORMATTER = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const DATE_FORMATTER = new Intl.DateTimeFormat('tr-TR', { day: 'numeric', month: 'short' });
-
 // Para birimi formatla (1.250,00 ₺ gibi)
 export const formatCurrency = (amount) => 
-    CURRENCY_FORMATTER.format(amount);
+    new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
   
 // Tarih formatla (12 Ara gibi)
-export const formatDate = (dateStr) => {
-    const date = new Date(dateStr);
-    if (isNaN(date)) return String(dateStr);
-    return DATE_FORMATTER.format(date);
-};
+export const formatDate = (dateStr) =>
+    new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
   
 // Ödeme yöntemini güzel gösteren fonksiyon
 export const getSubMethod = (trans) => {
