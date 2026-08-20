@@ -3,7 +3,7 @@ export const formatCurrency = (amount) =>
     new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
   
 // Tarih formatla (12 Ara gibi)
-export const formatDate = (dateStr) => 
+export const formatDate = (dateStr) =>
     new Date(dateStr).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
   
 // Ödeme yöntemini güzel gösteren fonksiyon
