@@ -1,0 +1,3 @@
+## 2025-02-12 - Cached Intl.NumberFormat and Intl.DateTimeFormat
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside utility functions that are called frequently during renders/loops (like `formatCurrency` and `formatDate`) introduces significant overhead (~1.2s to ~2.0s for 10k ops) in this Vite React app.
+**Action:** Extract these to module-level constants and reuse them for formatting to achieve ~100x performance improvement (~10ms for 10k ops). Make sure to check date validity (e.g., `isNaN(date)`) before passing to `Intl.DateTimeFormat.format()` as it throws a `RangeError: Invalid time value` for invalid dates, unlike `toLocaleDateString`.
