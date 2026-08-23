@@ -1,6 +1,8 @@
+// ⚡ Bolt: Cached Intl.NumberFormat instance to prevent ~100x overhead of repeated instantiations during frequent renders/loops.
+const CURRENCY_FORMATTER = new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+
 // Para birimi formatla (1.250,00 ₺ gibi)
-export const formatCurrency = (amount) => 
-    new Intl.NumberFormat('tr-TR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(amount);
+export const formatCurrency = (amount) => CURRENCY_FORMATTER.format(amount);
   
 // Tarih formatla (12 Ara gibi)
 export const formatDate = (dateStr) => 
