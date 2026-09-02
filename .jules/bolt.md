@@ -1,0 +1,3 @@
+## 2024-05-14 - Cache Intl formatters
+**Learning:** Creating new `Intl.NumberFormat` and `Intl.DateTimeFormat` instances on every call is extremely slow (up to ~100x slower) compared to reusing a cached instance. This is a common bottleneck in React applications that format a lot of data (e.g. lists of transactions).
+**Action:** Always extract `Intl.*Format` instances to module-level constants or use memoization when formatting lists of data. When replacing `toLocaleDateString` with a cached `Intl.DateTimeFormat`, remember to add an `isNaN(date)` check as the behavior differs for invalid dates.
