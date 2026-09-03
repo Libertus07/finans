@@ -1,0 +1,3 @@
+## 2024-10-25 - Caching Intl Formatters
+**Learning:** Re-instantiating `Intl.NumberFormat` and `Date().toLocaleDateString()` inside frequently called helper functions (like `formatCurrency` and `formatDate` called 70+ times) incurs massive overhead compared to using cached `Intl` instances. Note: `Intl.DateTimeFormat.format` throws on invalid dates unlike `toLocaleDateString`.
+**Action:** Extract and cache `Intl.NumberFormat` and `Intl.DateTimeFormat` outside of functions that are called frequently during renders, and always add a validity check (`!isNaN(date)`) when using the cached `DateTimeFormat`.
