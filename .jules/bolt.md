@@ -1,0 +1,3 @@
+## 2024-09-04 - Caching Intl Formatters in React
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` on every function call is a severe performance bottleneck. In `patron-finans/src/utils/helpers.js`, extracting these to module-level constants reduces execution time by over 98% (5478ms to 106ms for currency, 22126ms to 382ms for date). However, while `new Date(...).toLocaleDateString()` gracefully returns 'Invalid Date' for invalid inputs, `Intl.DateTimeFormat().format(new Date('invalid'))` throws a `RangeError`.
+**Action:** When refactoring to use a cached `Intl.DateTimeFormat` instance, always add a date validity check (e.g., `isNaN(date)`) and explicitly return 'Invalid Date' to preserve the original graceful fallback behavior exactly.
