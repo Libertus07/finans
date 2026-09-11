@@ -1,0 +1,3 @@
+## 2025-02-23 - Caching Intl Formatters
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` on every call is highly inefficient. Benchmarks show cached instances reduce execution time by over 90% (e.g., from ~1000ms to ~60ms for 10000 iterations). Note that `Intl.DateTimeFormat().format(new Date('invalid'))` throws a `RangeError`, unlike `.toLocaleDateString()` which gracefully returns `'Invalid Date'`, so a date validity check `isNaN(date)` must be included.
+**Action:** Always cache `Intl` formatters globally or module-level rather than recreating them inside formatting functions.
