@@ -1,0 +1,3 @@
+## 2024-05-18 - Caching Intl Formatters
+**Learning:** Creating `Intl.NumberFormat` and `Intl.DateTimeFormat` instances is an expensive operation in JavaScript, becoming a noticeable bottleneck (taking 1-3ms per call) when formatting numbers/dates repeatedly in lists or renders. However, unlike `Date.prototype.toLocaleDateString` which gracefully returns `'Invalid Date'`, `Intl.DateTimeFormat.prototype.format` throws a `RangeError: Invalid time value` if the date is invalid.
+**Action:** Always extract and cache `Intl` formatter instances at the module level when used in frequent utility functions. Remember to add a date validity check (`isNaN(date)`) before calling `.format(date)` when migrating from `toLocaleDateString` to a cached `Intl.DateTimeFormat`.
