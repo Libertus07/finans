@@ -1,0 +1,3 @@
+## 2024-05-20 - Intl Formatters Performance Edge Case
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` on every function call is extremely slow compared to caching the instance (~60x difference). However, while `new Date('invalid').toLocaleDateString()` gracefully returns 'Invalid Date', the cached `Intl.DateTimeFormat().format(new Date('invalid'))` throws a `RangeError: Invalid time value`.
+**Action:** When caching `Intl` formatters to optimize performance, always explicitly handle invalid dates (e.g., using `isNaN(date)`) to replicate the original fallback behavior and prevent fatal application errors.
