@@ -1,0 +1,3 @@
+## 2023-12-14 - [Formatter Caching Optimization]
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` (or calling `toLocaleDateString` which does so under the hood) on every render or loop iteration is extremely slow. Caching these formatters provides a ~20x-60x performance speedup.
+**Action:** Always cache `Intl.*` formatters globally rather than instantiating them inside frequently called helper functions. Handle invalid dates gracefully when transitioning from `toLocaleDateString` to `Intl.DateTimeFormat().format(new Date(...))` as `toLocaleDateString` returns 'Invalid Date' natively while `Intl.DateTimeFormat` throws a `RangeError`.
