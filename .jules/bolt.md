@@ -1,0 +1,3 @@
+## 2023-10-06 - Caching Intl formatters
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` on every render/function call is a significant performance bottleneck. `toLocaleDateString` also dynamically instantiates an `Intl` formatter and gracefully handles invalid dates, whereas `Intl.DateTimeFormat.format()` throws a `RangeError`.
+**Action:** Always cache `Intl` formatter instances globally or at the module level. When refactoring `toLocaleDateString` to use a cached `Intl.DateTimeFormat`, always include an explicit date validity check (e.g., `isNaN(date)`) to prevent crashes, and preserve the original fallback strings like 'Invalid Date'.
