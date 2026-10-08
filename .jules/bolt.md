@@ -1,0 +1,3 @@
+## 2025-01-26 - Intl Formatters Caching Performance Optimization
+**Learning:** Recreating `Intl.NumberFormat` and `Intl.DateTimeFormat` instances for every call (e.g., inside utility functions called in render loops or large list iterations) creates a significant performance bottleneck due to high initialization costs.
+**Action:** Always cache and reuse `Intl.*Format` instances globally instead of creating new instances inside formatting utility functions. Note that `Intl.DateTimeFormat` does not gracefully handle 'Invalid Date' objects like `toLocaleDateString` does, so add a manual `isNaN(date)` check when refactoring.
