@@ -1,0 +1,3 @@
+## 2024-10-13 - Cached Intl.DateTimeFormat Exception Edge Case
+**Learning:** Refactoring `new Date().toLocaleDateString()` to a cached `Intl.DateTimeFormat().format()` instance for performance introduces a surprising edge case: `Intl.DateTimeFormat` throws a `RangeError: Invalid time value` when formatting invalid dates, whereas `toLocaleDateString` gracefully returns the string "Invalid Date".
+**Action:** Always add an explicit date validity check (e.g., `isNaN(date)`) and return the literal string "Invalid Date" as a fallback when implementing this specific optimization to preserve existing application behavior.
