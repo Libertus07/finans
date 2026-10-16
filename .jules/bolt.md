@@ -1,0 +1,3 @@
+## 2024-05-19 - [Intl Formatters are Expensive]
+**Learning:** Recreating `Intl.NumberFormat` and `Intl.DateTimeFormat` objects for every call is extremely slow (can be 60x to 130x slower in Node). We have global helper functions (`formatCurrency`, `formatDate`) doing exactly this on every invocation.
+**Action:** Always cache and reuse `Intl.NumberFormat` and `Intl.DateTimeFormat` instances, particularly in common helper functions used across React renders. Ensure fallback to "Invalid Date" for invalid inputs with `Intl.DateTimeFormat`, as it throws on invalid dates whereas `toLocaleDateString` returns "Invalid Date" directly.
