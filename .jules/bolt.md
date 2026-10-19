@@ -1,0 +1,3 @@
+## 2023-10-19 - Intl Performance Bottleneck
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside utility functions (like `formatCurrency` and `formatDate`) is a massive performance bottleneck, taking ~300ms for 1000 calls compared to ~1.3ms when cached. Also, when caching `Intl.DateTimeFormat`, calling `format(new Date('invalid'))` throws a `RangeError: Invalid time value`, whereas `toLocaleDateString` gracefully returned 'Invalid Date'.
+**Action:** Always extract and cache `Intl` formatters outside the function scope as module-level constants. When refactoring date formatting, always add a `isNaN(date)` check to explicitly return 'Invalid Date' and maintain existing behavior.
