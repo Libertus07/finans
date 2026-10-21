@@ -1,0 +1,3 @@
+## 2024-03-22 - Refactor Intl Formatters
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` (or `Intl.DateTimeFormat`) inside formatting functions is a significant performance bottleneck, especially when those functions are called repeatedly in React renders (like in lists or charts). `Intl.DateTimeFormat().format(new Date('invalid'))` throws a `RangeError: Invalid time value`, whereas `toLocaleDateString` gracefully handles it, returning 'Invalid Date'. Always add a date validity check (e.g., `isNaN(date)`) when implementing this optimization.
+**Action:** Always extract and cache these formatters as module-level constants.
