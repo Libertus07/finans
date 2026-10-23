@@ -1,0 +1,3 @@
+## 2023-10-23 - Extracting Intl formatters as module-level constants
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside formatting functions causes significant performance bottlenecks, especially in React renders. Furthermore, replacing `toLocaleDateString()` with a cached `Intl.DateTimeFormat` can cause unhandled `RangeError` exceptions for invalid dates instead of returning "Invalid Date".
+**Action:** Always extract and cache these formatters as module-level constants, and when refactoring date formatting, explicitly handle invalid dates (e.g., using `isNaN(date)`) and return the exact original fallback literal string like 'Invalid Date'.
