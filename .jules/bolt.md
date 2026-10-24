@@ -1,0 +1,3 @@
+## 2024-10-24 - Caching Intl Formatters
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside formatting functions is a significant performance bottleneck in JavaScript, especially when called frequently during React renders. However, unlike `toLocaleDateString()`, `Intl.DateTimeFormat().format(new Date('invalid'))` throws a `RangeError: Invalid time value`.
+**Action:** Always extract these formatters as module-level constants to avoid instantiation overhead, but remember to add a date validity check (`isNaN(date)`) when refactoring to `Intl.DateTimeFormat()` to prevent crashes on invalid dates, returning a fallback like 'Invalid Date' if necessary.
