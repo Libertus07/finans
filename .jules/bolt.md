@@ -1,0 +1,3 @@
+## 2025-02-23 - Intl Formatter Initialization Bottleneck
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside formatting functions causes significant performance bottlenecks, especially when used inside React renders. Additionally, `toLocaleDateString` gracefully handles invalid dates by returning 'Invalid Date', whereas `Intl.DateTimeFormat().format()` throws a `RangeError: Invalid time value` if the date is invalid.
+**Action:** Always extract and cache `Intl` formatters as module-level constants. When refactoring `toLocaleDateString` to `Intl.DateTimeFormat`, always add a date validity check (e.g., `isNaN(date)`) and explicitly return the original fallback string ('Invalid Date') if the date is invalid to avoid throwing errors.
