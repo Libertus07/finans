@@ -1,0 +1,3 @@
+## 2025-02-14 - Intl Formatters Performance
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside utility functions like `formatCurrency` and `formatDate` causes a performance bottleneck in React renders. Furthermore, replacing `.toLocaleDateString()` with a cached `Intl.DateTimeFormat().format()` requires explicit `isNaN(date)` checking, as `.toLocaleDateString()` safely returns 'Invalid Date' for invalid inputs, while `format()` throws a `RangeError`.
+**Action:** Always extract and cache `Intl` formatters as module-level constants. When refactoring date formatters, ensure an explicit `isNaN` check is added to handle invalid dates and return the exact string 'Invalid Date'.
