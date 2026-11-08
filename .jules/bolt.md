@@ -1,0 +1,3 @@
+## 2024-05-18 - Intl Formatter Object Instantiation Overhead
+**Learning:** Instantiating `Intl.NumberFormat` and `Intl.DateTimeFormat` inside utility functions that are called frequently during renders (e.g., list or table rendering) creates a measurable performance bottleneck. Furthermore, caching `Intl.DateTimeFormat` requires care: unlike `Date.prototype.toLocaleDateString` which gracefully returns 'Invalid Date', `Intl.DateTimeFormat.prototype.format` throws a `RangeError` on invalid dates.
+**Action:** Always extract and cache `Intl` formatters at the module level. Ensure explicit validity checks (`isNaN(date)`) are in place when replacing `toLocaleDateString` to maintain the existing fallback behavior.
