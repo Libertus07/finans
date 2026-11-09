@@ -1,0 +1,3 @@
+## 2024-05-18 - Cached Intl formatters for performance
+**Learning:** Repeatedly instantiating `Intl.NumberFormat` and calling `toLocaleDateString` (which instantiates `Intl.DateTimeFormat`) in formatting functions is a significant performance bottleneck in React apps, especially when those functions are called repeatedly in lists or tables.
+**Action:** Extract and cache these formatters as module-level constants to avoid instantiation on every call. Note that `Intl.DateTimeFormat().format` throws a `RangeError` on invalid dates unlike `toLocaleDateString`, so always check `isNaN(date)` and return 'Invalid Date' if so.
